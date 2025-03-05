@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface DaoMobilePhone extends Dao<MobilePhone> {
     List<MobilePhone> findPhoneByFilter(MobilePhone mobilePhone);
+
 }
