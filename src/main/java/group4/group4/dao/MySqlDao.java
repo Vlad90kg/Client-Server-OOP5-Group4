@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class MySqlDao {
 
     public Connection getConnection() {
-        String driver = "com.mysql.cj,jdbc.Driver";
+        String driver = "com.mysql.cj.jdbc.Driver";
         String url = "jdbc:mysql://localhost:3306/mobile_store";
         String user = "root";
         String password = "";
