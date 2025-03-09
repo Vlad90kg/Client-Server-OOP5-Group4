@@ -7,6 +7,10 @@ public class MobilePhone {
     private int quantity;
     private double price;
 
+    public MobilePhone(double price) {
+        this.price = price;
+    }
+
     public MobilePhone(int id, int brand_id, String model, int quantity, double price) {
         this.id = id;
         this.brand_id = brand_id;

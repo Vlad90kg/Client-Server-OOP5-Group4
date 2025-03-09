@@ -13,7 +13,7 @@ public interface Dao <T> {
     T insert(T t);
     void update(int id, T t);
     void delete(int id);
-    List<T> findByFilter(Comparator<T> comparator);
+    List<T> findByFilter(Comparator<T> comparator) throws DaoException;
 
 
 }

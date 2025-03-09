@@ -12,10 +12,16 @@ public class Main {
     public static void main(String[] args) throws DaoException {
         DaoMobilePhone daoMobilePhone = new DaoMobilePhoneImpl();
 
-        Comparator<MobilePhone> comparator =  Comparator.comparing(MobilePhone::getPrice);
+        Comparator<MobilePhone> comparator =  (p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice());
         List<MobilePhone> list = daoMobilePhone.getAll();
-        list.sort(comparator);
+        List<MobilePhone> phonesOver500 = daoMobilePhone.findByFilter(comparator);
         for (MobilePhone mobilePhone : list) {
+            System.out.println(mobilePhone);
+        }
+        System.out.println("Phones over 500: ");
+
+        for (MobilePhone mobilePhone : phonesOver500) {
+            System.out.println( mobilePhone);
             System.out.println(mobilePhone);
         }
     }

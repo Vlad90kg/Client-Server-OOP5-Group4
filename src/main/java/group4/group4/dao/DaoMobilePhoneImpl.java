@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
 
 public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
 
@@ -56,8 +57,25 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     }
 
     @Override
-    public List<MobilePhone> findByFilter(Comparator<MobilePhone> comparator) {
-
-        return List.of();
+    public List<MobilePhone> findByFilter(Comparator<MobilePhone> comparator) throws DaoException {
+        List<MobilePhone> mobilePhones = getAll();
+        List<MobilePhone> filteredMobilePhones = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+        double price = 0.0;
+        System.out.println("Please enter the threshold price: ");
+        while (!scanner.hasNextDouble()) {
+            System.out.println("Price has to be a number. Enter the threshold price: ");
+            scanner.next();
+        }
+        price = scanner.nextDouble();
+        scanner.nextLine();
+        MobilePhone mobilePhone = new MobilePhone(price);
+        for (MobilePhone phone : mobilePhones) {
+            if(comparator.compare(phone, mobilePhone) >= 0) {
+                filteredMobilePhones.add(phone);
+            }
+        }
+        scanner.close();
+        return filteredMobilePhones;
     }
 }
