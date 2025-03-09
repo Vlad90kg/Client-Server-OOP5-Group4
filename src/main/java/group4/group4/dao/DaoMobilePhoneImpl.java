@@ -37,8 +37,33 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     }
 
     @Override
-    public MobilePhone getById(int id) {
-        return null;
+    public MobilePhone getById(int Id) throws DaoException {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        MobilePhone phone2 = null;
+
+        try {
+            connection = this.getConnection();
+            String query = "SELECT * FROM MobilePhone WHERE ID = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, Id);
+
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int brand_id = resultSet.getInt("brand_id");
+                String model = resultSet.getString("model");
+                double price = resultSet.getDouble("price");
+                int quantity = resultSet.getInt("quantity");
+                phone2 = new MobilePhone(id,brand_id,model,quantity,price);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("getById() " + e.getMessage());
+        }
+
+        return phone2;
     }
 
     @Override
@@ -52,7 +77,38 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(int brand_id)throws DaoException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = this.getConnection();
+
+            String deletePhoneSpecificationsQuery = "DELETE FROM phonespecifications WHERE phone_id IN (SELECT id FROM mobilephone WHERE BRAND_ID = ?)";
+            preparedStatement = connection.prepareStatement(deletePhoneSpecificationsQuery);
+            preparedStatement.setInt(1, brand_id);
+            preparedStatement.executeUpdate();
+
+            String deleteMobilePhoneQuery = "DELETE FROM MOBILEPHONE WHERE BRAND_ID = ?";
+            preparedStatement = connection.prepareStatement(deleteMobilePhoneQuery);
+            preparedStatement.setInt(1, brand_id);
+            preparedStatement.executeUpdate();
+
+
+            String deleteBrandQuery = "DELETE FROM BRAND WHERE ID = ?";
+            preparedStatement = connection.prepareStatement(deleteBrandQuery);
+            preparedStatement.setInt(1, brand_id);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Phone with ID " + brand_id + " deleted successfully!");
+            }
+            else {
+                System.out.println("No phone found with ID " + brand_id);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("delete() " + e.getMessage());
+        }
 
     }
 
