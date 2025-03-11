@@ -77,34 +77,29 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     }
 
     @Override
-    public void delete(int brand_id)throws DaoException {
+    public void delete(int id)throws DaoException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
         try {
             connection = this.getConnection();
 
-            String deletePhoneSpecificationsQuery = "DELETE FROM phonespecifications WHERE phone_id IN (SELECT id FROM mobilephone WHERE BRAND_ID = ?)";
+            String deletePhoneSpecificationsQuery = "DELETE FROM phonespecifications WHERE phone_id IN (SELECT id FROM mobilephone WHERE id = ?)";
             preparedStatement = connection.prepareStatement(deletePhoneSpecificationsQuery);
-            preparedStatement.setInt(1, brand_id);
+            preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
 
-            String deleteMobilePhoneQuery = "DELETE FROM MOBILEPHONE WHERE BRAND_ID = ?";
+            String deleteMobilePhoneQuery = "DELETE FROM MOBILEPHONE WHERE id = ?";
             preparedStatement = connection.prepareStatement(deleteMobilePhoneQuery);
-            preparedStatement.setInt(1, brand_id);
-            preparedStatement.executeUpdate();
+            preparedStatement.setInt(1, id);
 
-
-            String deleteBrandQuery = "DELETE FROM BRAND WHERE ID = ?";
-            preparedStatement = connection.prepareStatement(deleteBrandQuery);
-            preparedStatement.setInt(1, brand_id);
 
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
-                System.out.println("Phone with ID " + brand_id + " deleted successfully!");
+                System.out.println("Phone with ID " + id + " deleted successfully!");
             }
             else {
-                System.out.println("No phone found with ID " + brand_id);
+                System.out.println("No phone found with ID " + id);
             }
         } catch (SQLException e) {
             throw new DaoException("delete() " + e.getMessage());
@@ -124,7 +119,6 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
             scanner.next();
         }
         price = scanner.nextDouble();
-        scanner.nextLine();
         MobilePhone mobilePhone = new MobilePhone(price);
         for (MobilePhone phone : mobilePhones) {
             if(comparator.compare(phone, mobilePhone) >= 0) {
