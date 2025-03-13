@@ -16,7 +16,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
 
     @Override
     public List<MobilePhone> getAll() throws DaoException {
-        String sql = "select * from MobilePhone";
+        String sql = "select * from mobile_phone";
         List<MobilePhone> mobilePhones = new ArrayList<>();
         try(Connection connection = getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -46,7 +46,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
 
         try {
             connection = this.getConnection();
-            String query = "SELECT * FROM MobilePhone WHERE ID = ?";
+            String query = "SELECT * FROM mobile_phone WHERE ID = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, Id);
 
@@ -84,12 +84,12 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
         try {
             connection = this.getConnection();
 
-            String deletePhoneSpecificationsQuery = "DELETE FROM phonespecifications WHERE phone_id IN (SELECT id FROM mobilephone WHERE id = ?)";
+            String deletePhoneSpecificationsQuery = "DELETE FROM phone_specifications WHERE phone_id IN (SELECT id FROM mobile_phone WHERE id = ?)";
             preparedStatement = connection.prepareStatement(deletePhoneSpecificationsQuery);
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
 
-            String deleteMobilePhoneQuery = "DELETE FROM MOBILEPHONE WHERE id = ?";
+            String deleteMobilePhoneQuery = "DELETE FROM mobile_phone WHERE id = ?";
             preparedStatement = connection.prepareStatement(deleteMobilePhoneQuery);
             preparedStatement.setInt(1, id);
 
@@ -116,7 +116,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
         System.out.println("Please enter the threshold price: ");
         while (!scanner.hasNextDouble()) {
             System.out.println("Price has to be a number. Enter the threshold price: ");
-            scanner.next();
+
         }
         price = scanner.nextDouble();
         MobilePhone mobilePhone = new MobilePhone(price);

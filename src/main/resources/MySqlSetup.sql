@@ -3,7 +3,7 @@ CREATE DATABASE mobile_store;
 USE mobile_store;
 
 -- Create Brand table to store mobile phone manufacturers
-CREATE TABLE Brand
+CREATE TABLE brand
 (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     name        VARCHAR(50) NOT NULL,
@@ -11,25 +11,25 @@ CREATE TABLE Brand
 );
 
 -- Insert sample brands
-INSERT INTO Brand (name, description)
+INSERT INTO brand (name, description)
 VALUES ('Apple', 'Apple Inc.'),
        ('Samsung', 'Samsung Electronics'),
        ('Huawei', 'Huawei Technologies'),
        ('OnePlus', 'OnePlus Mobile');
 
 -- Create MobilePhone table as the main entity
-CREATE TABLE MobilePhone
+CREATE TABLE mobile_phone
 (
     id             INT AUTO_INCREMENT PRIMARY KEY,
     brand_id       INT            NOT NULL,
     model          VARCHAR(50)    NOT NULL,
     quantity       INT            NOT NULL,
     price          DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (brand_id) REFERENCES Brand (id)
+    FOREIGN KEY (brand_id) REFERENCES brand (id)
 );
 
 -- Insert at least 10 sample mobile phone records
-INSERT INTO MobilePhone (brand_id, model, quantity, price)
+INSERT INTO mobile_phone (brand_id, model, quantity, price)
 VALUES (1, 'iPhone 14 Pro', 15, 999.99),
        (1, 'iPhone 14', 20, 799.99),
        (2, 'Galaxy S23 Ultra', 10, 1199.99),
@@ -41,15 +41,15 @@ VALUES (1, 'iPhone 14 Pro', 15, 999.99),
        (2, 'Galaxy A53', 30, 499.99),
        (1, 'iPhone SE', 25, 429.99);
 
-CREATE TABLE PhoneSpecifications
+CREATE TABLE phone_specifications
 (
     phone_id INT PRIMARY KEY,
     storage  VARCHAR(20),
     chipset  VARCHAR(50),
-    FOREIGN KEY (phone_id) REFERENCES MobilePhone (id)
+    FOREIGN KEY (phone_id) REFERENCES mobile_phone (id)
 );
 
-INSERT INTO PhoneSpecifications (phone_id, storage, chipset)
+INSERT INTO phone_specifications (phone_id, storage, chipset)
 
 VALUES (1, '128GB', 'A16 Bionic'),
        (2, '128GB', 'A15 Bionic'),
