@@ -15,16 +15,15 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         Comparator<MobilePhone> comparator =  (p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice());
         List<MobilePhone> list = daoMobilePhone.getAll();
-        List<MobilePhone> phonesOverX = daoMobilePhone.findByFilter(comparator);
+        List<MobilePhone> phonesOver500 = daoMobilePhone.findByFilter(comparator);
         for (MobilePhone mobilePhone : list) {
             System.out.println(mobilePhone);
         }
+        System.out.println("Phones over 500: ");
 
-        System.out.println("Phones over X: ");
-
-
-        for (MobilePhone mobilePhone : phonesOverX) {
+        for (MobilePhone mobilePhone : phonesOver500) {
             System.out.println( mobilePhone);
+            System.out.println(mobilePhone);
         }
         System.out.println("Enter Brand ID to delete: ");
 
@@ -32,6 +31,8 @@ public class Main {
         scanner.nextLine();
         daoMobilePhone.delete(brand_id);
         System.out.println("Brand id deleted successfully!");
+
+
 
 
         System.out.print("Enter the Brand ID to search: ");
