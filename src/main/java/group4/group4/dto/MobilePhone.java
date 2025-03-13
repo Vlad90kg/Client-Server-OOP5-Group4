@@ -69,6 +69,7 @@ public class MobilePhone {
     @Override
     public String toString() {
         return "MobilePhone{" +
+                " id='" + id + '\'' +
                 " model='" + model + '\'' +
                 ", quantity=" + quantity +
                 ", price=" + price +
