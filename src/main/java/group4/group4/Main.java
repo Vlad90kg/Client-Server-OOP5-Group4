@@ -62,5 +62,21 @@ public class Main {
             System.out.println( mobilePhone);
         }
 
+        // Feature 4
+        String model;
+        int brandId, quantity;
+        double price;
+
+        System.out.print("Enter ID of brand: ");
+        brandId = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter model: ");
+        model = scanner.nextLine();
+        System.out.print("Enter quantity: ");
+        quantity = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter price: ");
+        price = Double.parseDouble(scanner.nextLine());
+
+        MobilePhone newMobilePhone = new MobilePhone(brandId, model, quantity, price);
+        System.out.println("Added phone: " + daoMobilePhone.insert(newMobilePhone));
     }
 }
