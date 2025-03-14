@@ -10,7 +10,7 @@ public interface Dao <T> {
 
     List<T> getAll() throws DaoException;
     T getById(int id)throws DaoException;
-    T insert(T t);
+    T insert(T t) throws DaoException;
     void update(int id, T t);
     void delete(int id)throws DaoException;
     List<T> findByFilter(Comparator<T> comparator) throws DaoException;

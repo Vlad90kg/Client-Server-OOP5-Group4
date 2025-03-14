@@ -15,11 +15,13 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
+        // Feature 1
         List<MobilePhone> list = daoMobilePhone.getAll();
         for (MobilePhone mobilePhone : list) {
             System.out.println(mobilePhone);
         }
 
+        // Feature 3
         System.out.println("Enter ID to delete: ");
 
         int id = scanner.nextInt();
@@ -34,7 +36,7 @@ public class Main {
             }
         }
 
-
+        // Feature 2
         System.out.print("Enter the ID to search: ");
         id = scanner.nextInt();
 
@@ -47,6 +49,7 @@ public class Main {
             System.out.println("No Phone found with ID: " + id);
         }
 
+        // Feature 6
         Comparator<MobilePhone> comparator =  (p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice());
         list = daoMobilePhone.getAll();
         List<MobilePhone> phonesOver500 = daoMobilePhone.findByFilter(comparator);

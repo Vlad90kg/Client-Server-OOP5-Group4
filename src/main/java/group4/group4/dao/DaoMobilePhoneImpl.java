@@ -14,6 +14,7 @@ import java.util.Scanner;
 
 public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
 
+    // Feature 1
     @Override
     public List<MobilePhone> getAll() throws DaoException {
         String sql = "select * from mobile_phone";
@@ -36,6 +37,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
         return mobilePhones;
     }
 
+    // Feature 2
     @Override
     public MobilePhone getById(int Id) throws DaoException {
 
@@ -66,16 +68,36 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
         return phone2;
     }
 
+    // Feature 4
     @Override
-    public MobilePhone insert(MobilePhone mobilePhone) {
-        return null;
+    public MobilePhone insert(MobilePhone mobilePhone) throws DaoException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = this.getConnection();
+            String query = "INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?);";
+
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, mobilePhone.getBrand_id());
+            statement.setString(2, mobilePhone.getModel());
+            statement.setInt(3, mobilePhone.getQuantity());
+            statement.setDouble(4, mobilePhone.getPrice());
+
+            statement.executeUpdate();
+        }
+        catch (SQLException e) { throw new DaoException("insert() " + e.getMessage()); }
+
+        return mobilePhone;
     }
 
+    // Feature 5
     @Override
     public void update(int id, MobilePhone mobilePhone) {
 
     }
 
+    // Feature 3
     @Override
     public void delete(int id)throws DaoException {
         Connection connection = null;
@@ -107,6 +129,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
 
     }
 
+    // Feature 6
     @Override
     public List<MobilePhone> findByFilter(Comparator<MobilePhone> comparator) throws DaoException {
         List<MobilePhone> mobilePhones = getAll();
