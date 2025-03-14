@@ -63,20 +63,19 @@ public class Main {
         }
 
         // Feature 4
-        String model;
-        int brandId, quantity;
-        double price;
+        String newModel;
+        int newBrandId, newQuantity;
+        double newPrice;
 
-        System.out.print("Enter ID of brand: ");
-        brandId = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter brand ID: ");
+        newBrandId = Integer.parseInt(scanner.nextLine());
         System.out.print("Enter model: ");
-        model = scanner.nextLine();
+        newModel = scanner.nextLine();
         System.out.print("Enter quantity: ");
-        quantity = Integer.parseInt(scanner.nextLine());
+        newQuantity = Integer.parseInt(scanner.nextLine());
         System.out.print("Enter price: ");
-        price = Double.parseDouble(scanner.nextLine());
+        newPrice = Double.parseDouble(scanner.nextLine());
 
-        MobilePhone newMobilePhone = new MobilePhone(brandId, model, quantity, price);
-        System.out.println("Added phone: " + daoMobilePhone.insert(newMobilePhone));
+        System.out.println("Added phone: " + daoMobilePhone.insert(new MobilePhone(newBrandId, newModel, newQuantity, newPrice)));
     }
 }

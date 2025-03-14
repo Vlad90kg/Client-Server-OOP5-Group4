@@ -93,8 +93,24 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
 
     // Feature 5
     @Override
-    public void update(int id, MobilePhone mobilePhone) {
+    public void update(int id, MobilePhone mobilePhone) throws DaoException {
+        Connection connection = null;
+        PreparedStatement statement = null;
 
+        try {
+            connection = this.getConnection();
+            String query = "UPDATE mobile_phone SET brand_id = ?, model = ?, quantity = ?, price = ? WHERE id = ?";
+
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, mobilePhone.getBrand_id());
+            statement.setString(2, mobilePhone.getModel());
+            statement.setInt(3, mobilePhone.getQuantity());
+            statement.setDouble(4, mobilePhone.getPrice());
+            statement.setDouble(5, id);
+
+            statement.executeUpdate();
+        }
+        catch (SQLException e) { throw new DaoException("update() " + e.getMessage()); }
     }
 
     // Feature 3
