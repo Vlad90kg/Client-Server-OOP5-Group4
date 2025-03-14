@@ -77,5 +77,23 @@ public class Main {
         newPrice = Double.parseDouble(scanner.nextLine());
 
         System.out.println("Added phone: " + daoMobilePhone.insert(new MobilePhone(newBrandId, newModel, newQuantity, newPrice)));
+
+        // Feature 5
+        String updatedModel;
+        int idToUpdate, updatedBrandId, updatedQuantity;
+        double updatedPrice;
+
+        System.out.print("Enter ID of mobile phone you would like to change: ");
+        idToUpdate = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter new brand ID: ");
+        updatedBrandId = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter new model: ");
+        updatedModel = scanner.nextLine();
+        System.out.print("Enter new quantity: ");
+        updatedQuantity = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter new price: ");
+        updatedPrice = Double.parseDouble(scanner.nextLine());
+
+        daoMobilePhone.update(idToUpdate, new MobilePhone(updatedBrandId, updatedModel, updatedQuantity, updatedPrice));
     }
 }
