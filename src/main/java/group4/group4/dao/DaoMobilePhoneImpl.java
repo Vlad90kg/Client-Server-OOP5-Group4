@@ -93,7 +93,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
 
     // Feature 5
     @Override
-    public void update(int id, MobilePhone mobilePhone) throws DaoException {
+    public int update(int id, MobilePhone mobilePhone) throws DaoException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -108,21 +108,21 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
             statement.setDouble(4, mobilePhone.getPrice());
             statement.setDouble(5, id);
 
-            statement.executeUpdate();
+            return statement.executeUpdate();
         }
         catch (SQLException e) { throw new DaoException("update() " + e.getMessage()); }
     }
 
     // Feature 3
     @Override
-    public void delete(int id)throws DaoException {
+    public int delete(int id)throws DaoException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
         try {
             connection = this.getConnection();
 
-            String deletePhoneSpecificationsQuery = "DELETE FROM phone_specifications WHERE phone_id IN (SELECT id FROM mobile_phone WHERE id = ?)";
+            String deletePhoneSpecificationsQuery = "DELETE FROM phone_specification WHERE phone_id IN (SELECT id FROM mobile_phone WHERE id = ?)";
             preparedStatement = connection.prepareStatement(deletePhoneSpecificationsQuery);
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
@@ -132,13 +132,8 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
             preparedStatement.setInt(1, id);
 
 
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Phone with ID " + id + " deleted successfully!");
-            }
-            else {
-                System.out.println("No phone found with ID " + id);
-            }
+            return preparedStatement.executeUpdate();
+
         } catch (SQLException e) {
             throw new DaoException("delete() " + e.getMessage());
         }
