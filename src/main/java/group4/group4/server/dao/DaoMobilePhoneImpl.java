@@ -1,7 +1,7 @@
-package group4.group4.dao;
+package group4.group4.server.dao;
 
 import group4.group4.Exceptions.DaoException;
-import group4.group4.dto.MobilePhone;
+import group4.group4.server.dto.MobilePhone;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

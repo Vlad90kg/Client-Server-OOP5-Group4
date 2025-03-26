@@ -1,4 +1,4 @@
-package group4.group4.GUI;
+package group4.group4.client.GUI;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

@@ -1,4 +1,4 @@
-package group4.group4.dao;
+package group4.group4.server.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

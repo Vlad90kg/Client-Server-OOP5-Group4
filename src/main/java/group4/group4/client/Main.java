@@ -1,9 +1,9 @@
-package group4.group4;
+package group4.group4.client;
 
 import group4.group4.Exceptions.DaoException;
-import group4.group4.dao.DaoMobilePhone;
-import group4.group4.dao.DaoMobilePhoneImpl;
-import group4.group4.dto.MobilePhone;
+import group4.group4.server.dao.DaoMobilePhone;
+import group4.group4.server.dao.DaoMobilePhoneImpl;
+import group4.group4.server.dto.MobilePhone;
 
 import java.util.Comparator;
 import java.util.List;
@@ -74,14 +74,7 @@ public class Main {
 
     }
 
-    public List<MobilePhone> getAllPhones(DaoMobilePhone daoMobilePhone) throws DaoException {
-        // Feature 1
-        List<MobilePhone> list = daoMobilePhone.getAll();
-        for (MobilePhone mobilePhone : list) {
-            System.out.println(mobilePhone);
-        }
-        return list;
-    }
+
 
     public MobilePhone getPhoneById(DaoMobilePhone daoMobilePhone) throws DaoException {
         // Feature 2

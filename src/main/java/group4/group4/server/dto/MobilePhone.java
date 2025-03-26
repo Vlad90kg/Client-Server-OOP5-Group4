@@ -1,4 +1,4 @@
-package group4.group4.dto;
+package group4.group4.server.dto;
 
 public class MobilePhone {
     private int id;
