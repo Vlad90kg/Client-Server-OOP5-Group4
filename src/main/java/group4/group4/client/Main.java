@@ -39,7 +39,7 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    mainInstance.getAllPhones(daoMobilePhone);
+//                    mainInstance.getAllPhones(daoMobilePhone);
                     break;
                 case 2:
                     mainInstance.getPhoneById(daoMobilePhone);
@@ -74,7 +74,14 @@ public class Main {
 
     }
 
-
+    public List<MobilePhone> getAllPhones(DaoMobilePhone daoMobilePhone) throws DaoException {
+        // Feature 1
+        List<MobilePhone> list = daoMobilePhone.getAll();
+        for (MobilePhone mobilePhone : list) {
+            System.out.println(mobilePhone);
+        }
+        return list;
+    }
 
     public MobilePhone getPhoneById(DaoMobilePhone daoMobilePhone) throws DaoException {
         // Feature 2
