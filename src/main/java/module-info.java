@@ -1,4 +1,5 @@
 module group4.group4 {
+    requires java.desktop;
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;

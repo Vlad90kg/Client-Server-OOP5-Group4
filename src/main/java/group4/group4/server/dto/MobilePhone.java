@@ -1,8 +1,10 @@
 package group4.group4.server.dto;
 
-public class MobilePhone {
+import java.io.Serializable;
+
+public class MobilePhone implements Serializable {
     private int id;
-    private int brand_id;
+    private int brandId;
     private String model;
     private int quantity;
     private double price;
@@ -13,17 +15,21 @@ public class MobilePhone {
 
     public MobilePhone(int id, int brand_id, String model, int quantity, double price) {
         this.id = id;
-        this.brand_id = brand_id;
+        this.brandId = brand_id;
         this.model = model;
         this.quantity = quantity;
         this.price = price;
     }
 
     public MobilePhone(int brand_id, String model, int quantity, double price) {
-        this.brand_id = brand_id;
+        this.brandId = brand_id;
         this.model = model;
         this.quantity = quantity;
         this.price = price;
+    }
+
+    public MobilePhone() {
+
     }
 
     public int getId() {
@@ -34,12 +40,12 @@ public class MobilePhone {
         this.id = id;
     }
 
-    public int getBrand_id() {
-        return brand_id;
+    public int getBrandId() {
+        return brandId;
     }
 
-    public void setBrand_id(int brand_id) {
-        this.brand_id = brand_id;
+    public void setBrandId(int brand_id) {
+        this.brandId = brand_id;
     }
 
     public String getModel() {

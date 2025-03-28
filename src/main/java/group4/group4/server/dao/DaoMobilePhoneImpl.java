@@ -79,7 +79,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
             String query = "INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?);";
 
             statement = connection.prepareStatement(query);
-            statement.setInt(1, mobilePhone.getBrand_id());
+            statement.setInt(1, mobilePhone.getBrandId());
             statement.setString(2, mobilePhone.getModel());
             statement.setInt(3, mobilePhone.getQuantity());
             statement.setDouble(4, mobilePhone.getPrice());
@@ -102,7 +102,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
             String query = "UPDATE mobile_phone SET brand_id = ?, model = ?, quantity = ?, price = ? WHERE id = ?";
 
             statement = connection.prepareStatement(query);
-            statement.setInt(1, mobilePhone.getBrand_id());
+            statement.setInt(1, mobilePhone.getBrandId());
             statement.setString(2, mobilePhone.getModel());
             statement.setInt(3, mobilePhone.getQuantity());
             statement.setDouble(4, mobilePhone.getPrice());
