@@ -120,6 +120,9 @@ class JsonConverterTest {
     }
 
 
-
-
+    @Test
+    public void testObjectToJson() {
+        String phoneString = jsonConverter.phoneToJson(dummyList.get(0));
+        assertEquals("{\"quantity\":55,\"price\":256,\"brandId\":1,\"model\":\"lool\",\"id\":1}", phoneString);
+    }
 }
