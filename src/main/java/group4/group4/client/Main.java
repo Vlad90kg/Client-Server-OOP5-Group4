@@ -73,7 +73,12 @@ public class Main {
 
                         break;
                     case 2:
-//                        mainInstance.getPhoneById(daoMobilePhone);
+                        System.out.print("Enter ID of phone to find: ");
+                        int idToFind = Integer.parseInt(scanner.nextLine());
+                        String req = "getById." + idToFind;
+                        out.println(req);
+                        String res = in.readLine();
+                        System.out.println(res + "\n");
                         break;
                     case 3:
 //                        mainInstance.deletePhoneById(daoMobilePhone);

@@ -102,19 +102,31 @@ class JsonConverterTest {
 
 
     @Test
-    public void testConvertNullList() {
+    public void feature7() {
+        ArrayList<MobilePhone> mobilePhones = new ArrayList<>();
+        MobilePhone phone1 = new MobilePhone(1,1, "lool",55, 256);
+        MobilePhone phone2 = new MobilePhone(2,1, "lool",55, 512);
+        mobilePhones.add(phone1);
+        mobilePhones.add(phone2);
+
         String nullString = jsonConverter.phonesListJson(null);
+        String emptyString = jsonConverter.phonesListJson(new ArrayList<>());
+        String list = jsonConverter.phonesListJson(mobilePhones);
+
         assertNull(nullString);
+        assertEquals("[]", emptyString);
+        assertEquals("[{\"quantity\":55,\"price\":256,\"brandId\":1,\"model\":\"lool\",\"id\":1},{\"quantity\":55,\"price\":512,\"brandId\":1,\"model\":\"lool\",\"id\":2}]", list);
     }
 
 
     @Test
-    public void testEmptyList() {
-        String emptyString = jsonConverter.phonesListJson(new ArrayList<>());
-        assertEquals("[]", emptyString);
+    public void feature8() {
+        String nullString = jsonConverter.phoneToJson(null);
+        String emptyString = jsonConverter.phoneToJson(new MobilePhone());
+        String phoneString = jsonConverter.phoneToJson(dummyList.get(0));
+
+        assertNull(nullString);
+        assertEquals("{\"quantity\":0,\"price\":0,\"brandId\":0,\"id\":0}", emptyString);
+        assertEquals("{\"quantity\":55,\"price\":256,\"brandId\":1,\"model\":\"lool\",\"id\":1}", phoneString);
     }
-
-
-
-
 }

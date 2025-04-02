@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.Scanner;
 
 public class ServerMain {
     final int PORT_NUMBER = 8080;
@@ -31,18 +32,26 @@ public class ServerMain {
             DaoMobilePhone daoMobilePhone = new DaoMobilePhoneImpl();
             System.out.println("Client connected");
             JsonConverter jsonConverter = new JsonConverter();
-
             String inputLine;
+
             boolean exit = false;
             while (!exit) {
                 inputLine = in.readLine();
+            int intArgument = 0;
+
+            if(inputLine.startsWith("getById")) {
+                intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
+                inputLine = "getById";
+            }
+
                 switch (inputLine) {
                     case "getAll":
                         String getAllString = jsonConverter.phonesListJson(getAllPhones(daoMobilePhone));
                         out.println(getAllString);
                         break;
-                    case "2":
-//                        mainInstance.getPhoneById(daoMobilePhone);
+                    case "getById":
+                        String getByIdString = jsonConverter.phoneToJson(getPhoneById(daoMobilePhone, intArgument));
+                        out.println(getByIdString);
                         break;
                     case "3":
 //                        mainInstance.deletePhoneById(daoMobilePhone);
@@ -86,23 +95,20 @@ public class ServerMain {
         }
         return list;
     }
-//
-//    public MobilePhone getPhoneById(DaoMobilePhone daoMobilePhone) throws DaoException {
-//        // Feature 2
-//        System.out.print("Enter the ID to search: ");
-//        int id = scanner.nextInt();
-//
-//        MobilePhone phone = daoMobilePhone.getById(id);
-//
-//        if (phone != null) {
-//            System.out.println("Id found:");
-//            System.out.println(phone);
-//        } else {
-//            System.out.println("No Phone found with ID: " + id);
-//        }
-//        return phone;
-//    }
-//
+
+    public MobilePhone getPhoneById(DaoMobilePhone daoMobilePhone, int idToSearch) throws DaoException {
+        // Feature 2
+        MobilePhone phone = daoMobilePhone.getById(idToSearch);
+
+        if (phone != null) {
+            System.out.println("Id found:");
+            System.out.println(phone);
+        } else {
+            System.out.println("No Phone found with ID: " + idToSearch);
+        }
+        return phone;
+    }
+
 //    public void deletePhoneById(DaoMobilePhone daoMobilePhone) throws DaoException {
 //        // Feature 3
 //        System.out.println("Enter ID to delete: ");
