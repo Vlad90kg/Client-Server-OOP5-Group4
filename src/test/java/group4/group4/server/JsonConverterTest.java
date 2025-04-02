@@ -98,11 +98,6 @@ class JsonConverterTest {
 
         }
 
-
-
-        System.out.println(new JSONArray(dummyList));
-
-
     }
 
 

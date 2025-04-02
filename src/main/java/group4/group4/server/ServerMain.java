@@ -31,10 +31,11 @@ public class ServerMain {
             DaoMobilePhone daoMobilePhone = new DaoMobilePhoneImpl();
             System.out.println("Client connected");
             JsonConverter jsonConverter = new JsonConverter();
-            String inputLine = in.readLine();
 
+            String inputLine;
             boolean exit = false;
             while (!exit) {
+                inputLine = in.readLine();
                 switch (inputLine) {
                     case "getAll":
                         String getAllString = jsonConverter.phonesListJson(getAllPhones(daoMobilePhone));
