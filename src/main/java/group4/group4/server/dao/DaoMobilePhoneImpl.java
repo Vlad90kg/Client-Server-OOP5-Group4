@@ -122,7 +122,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
         try {
             connection = this.getConnection();
 
-            String deletePhoneSpecificationsQuery = "DELETE FROM phone_specification WHERE phone_id IN (SELECT id FROM mobile_phone WHERE id = ?)";
+            String deletePhoneSpecificationsQuery = "DELETE FROM phone_specifications WHERE phone_id IN (SELECT id FROM mobile_phone WHERE id = ?)";
             preparedStatement = connection.prepareStatement(deletePhoneSpecificationsQuery);
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
