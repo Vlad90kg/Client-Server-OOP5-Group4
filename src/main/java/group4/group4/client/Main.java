@@ -73,6 +73,7 @@ public class Main {
 
                         break;
                     case 2:
+                        // TODO add error handling for entered value
                         System.out.print("Enter ID of phone to find: ");
                         int idToFind = Integer.parseInt(scanner.nextLine());
                         String req = "getById." + idToFind;
@@ -91,12 +92,26 @@ public class Main {
 //                        mainInstance.update(daoMobilePhone);
                         break;
                     case 6:
-
-//                        List<MobilePhone> filteredPhones = mainInstance.getFilteredPhones(daoMobilePhone);
-//                        System.out.println("Filtered Phones by Price:");
-//                        for (MobilePhone phone : filteredPhones) {
-//                            System.out.println(phone);
-//                        }
+                        double price = 0.0;
+                        System.out.println("Please enter the threshold price: ");
+                        try {
+                            price = Double.parseDouble(scanner.nextLine());
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                            continue;
+                        }
+                        List<MobilePhone> filteredMobilePhones = new ArrayList<>();
+                        String findByFilter = "getByFilter." + price;
+                        out.println(findByFilter);
+                        String filterResult = in.readLine();
+                        JSONArray getByFilterJson = new JSONArray(filterResult);
+                        for (int i = 0; i < getByFilterJson.length(); i++) {
+                            JSONObject jsonObject = getByFilterJson.getJSONObject(i);
+                            System.out.println(jsonObject);
+                            MobilePhone mobilePhone = new MobilePhone(jsonObject);
+                            filteredMobilePhones.add(mobilePhone);
+                        }
+                        System.out.println(filteredMobilePhones);
                         break;
                     case 7:
                         exit = true;

@@ -7,12 +7,14 @@ import org.mockito.Mock;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 class DaoMobilePhoneImplTest {
@@ -98,8 +100,27 @@ class DaoMobilePhoneImplTest {
 
         @Test
     void feature6() throws DaoException {
+        DaoMobilePhoneImpl dmpi = spy(new DaoMobilePhoneImpl(ds));
+            List<MobilePhone> fixedPhones = Arrays.asList(
+                    new MobilePhone(1, 1, "phone1", 1, 100.0),
+                    new MobilePhone(2, 2, "phone2", 2, 1000.0),
+                    new MobilePhone(3, 3, "phone3", 3, 5000.0),
+                    new MobilePhone(4, 4, "phone4", 4, 300.0),
+                    new MobilePhone(5, 4, "phone5", 5, 505.0)
+            );
 
+            doReturn(fixedPhones).when(dmpi).getAll();
 
+            Comparator<MobilePhone> comparator = Comparator.comparing(MobilePhone::getPrice);
+
+            List<MobilePhone> filteredList = dmpi.findByFilter(comparator, 500);
+
+            List<MobilePhone> expecteList = Arrays.asList(
+                    new MobilePhone(3, 3, "phone3", 3, 5000.0),
+                    new MobilePhone(5, 4, "phone5", 5, 505.0),
+                    new MobilePhone(2, 2, "phone2", 2, 1000.0)
+                    );
+            assertThat(filteredList).containsExactlyInAnyOrderElementsOf(filteredList);
     }
 
 }

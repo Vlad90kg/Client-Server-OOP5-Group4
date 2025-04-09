@@ -46,7 +46,7 @@ class JsonConverterTest {
         }
 
         @Override
-        public List<MobilePhone> findByFilter(Comparator<MobilePhone> comparator) throws DaoException {
+        public List<MobilePhone> findByFilter(Comparator<MobilePhone> comparator, double treshold) throws DaoException {
             return List.of();
         }
     };

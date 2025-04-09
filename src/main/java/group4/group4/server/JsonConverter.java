@@ -17,12 +17,7 @@ public class JsonConverter {
         }
         JSONArray jsonArray = new JSONArray();
         for (MobilePhone mobilePhone : phonesList) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", mobilePhone.getId());
-            jsonObject.put("brandId", mobilePhone.getBrandId());
-            jsonObject.put("model", mobilePhone.getModel());
-            jsonObject.put("quantity", mobilePhone.getQuantity());
-            jsonObject.put("price", mobilePhone.getPrice());
+            JSONObject jsonObject = serializeMobilePhone(mobilePhone);
             jsonArray.put(jsonObject);
         }
         return jsonArray.toString();
@@ -35,15 +30,21 @@ public class JsonConverter {
             return null;
         }
         else {
-            JSONObject jsonObject = new JSONObject();
-
-            jsonObject.put("id", phone.getId());
-            jsonObject.put("brandId", phone.getBrandId());
-            jsonObject.put("model", phone.getModel());
-            jsonObject.put("quantity", phone.getQuantity());
-            jsonObject.put("price", phone.getPrice());
+            JSONObject jsonObject = serializeMobilePhone(phone);
 
             return jsonObject.toString();
         }
     }
+
+    JSONObject serializeMobilePhone(MobilePhone phone) {
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("id", phone.getId());
+        jsonObject.put("brand_id", phone.getBrandId());
+        jsonObject.put("model", phone.getModel());
+        jsonObject.put("quantity", phone.getQuantity());
+        jsonObject.put("price", phone.getPrice());
+        return jsonObject;
+    }
+
 }

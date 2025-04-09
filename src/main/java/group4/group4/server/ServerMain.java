@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -38,10 +39,13 @@ public class ServerMain {
             while (!exit) {
                 inputLine = in.readLine();
             int intArgument = 0;
-
+            double price = 0;
             if(inputLine.startsWith("getById")) {
                 intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
                 inputLine = "getById";
+            } else if (inputLine.startsWith("getByFilter")) {
+                price = Double.parseDouble(inputLine.substring(inputLine.indexOf('.') + 1));
+                inputLine = "getByFilter";
             }
 
                 switch (inputLine) {
@@ -63,7 +67,9 @@ public class ServerMain {
                     case "5":
 //                        mainInstance.update(daoMobilePhone);
                         break;
-                    case "6":
+                    case "getByFilter":
+                            String  findByFilter = jsonConverter.phonesListJson(getFilteredPhones(daoMobilePhone, price));
+                            out.println(findByFilter);
 //                        List<MobilePhone> filteredPhones = mainInstance.getFilteredPhones(daoMobilePhone);
 //                        System.out.println("Filtered Phones by Price:");
 //                        for (MobilePhone phone : filteredPhones) {
@@ -209,9 +215,10 @@ public class ServerMain {
 //    }
 //
 //
-//    public List<MobilePhone> getFilteredPhones(DaoMobilePhone daoMobilePhone) throws DaoException {
-//        // Feature 6
-//        Comparator<MobilePhone> comparator = (p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice());
-//        return daoMobilePhone.findByFilter(comparator);
-//    }
+    public List<MobilePhone> getFilteredPhones(DaoMobilePhone daoMobilePhone, double treshold) throws DaoException {
+        // Feature 6
+        Comparator<MobilePhone> comparator = (p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice());
+
+        return daoMobilePhone.findByFilter(comparator, treshold);
+    }
 }
