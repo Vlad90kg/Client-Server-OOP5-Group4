@@ -74,28 +74,10 @@ class JsonConverterTest {
         JSONArray jsonArray = new JSONArray(jsonResult);
 
         System.out.println(jsonResult);
-        List<MobilePhone> mobilePhones = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            int id = jsonObject.getInt("id");
-            int brand_id = jsonObject.getInt("brandId");
-            String model = jsonObject.getString("model");
-            int quantity = jsonObject.getInt("quantity");
-            double price = jsonObject.getDouble("price");
 
-            int id2 = dummyList.get(i).getId();
-            int brand_id2 = dummyList.get(i).getBrandId();
-            String model2 = dummyList.get(i).getModel();
-            int quantity2 = dummyList.get(i).getQuantity();
-            double price2 = dummyList.get(i).getPrice();
-
-
-            assertEquals(id, id2);
-            assertEquals(brand_id, brand_id2);
-            assertEquals(model, model2);
-            assertEquals(quantity, quantity2);
-            assertEquals(price, price2);
-
+            assertEquals(new MobilePhone(jsonObject), dummyList.get(i));
         }
 
     }

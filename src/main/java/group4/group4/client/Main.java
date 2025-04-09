@@ -23,9 +23,9 @@ public class Main {
         mainInstance.start(8080);
     }
 
-    public void start(int port)  {
-        try(Socket socket = new Socket("localhost", port);
-            OutputStream outputStream = socket.getOutputStream();
+    public void start(int port) {
+        try (Socket socket = new Socket("localhost", port);
+             OutputStream outputStream = socket.getOutputStream();
         ) {
             PrintWriter out = new PrintWriter(outputStream, true);
             System.out.println("The client is running and has connected to the server.");
@@ -38,7 +38,7 @@ public class Main {
                 System.out.println("3. Delete Phone by ID");
                 System.out.println("4. Insert Phone");
                 System.out.println("5. Update Phone");
-                System.out.println("6. Filter Phones by Price");
+                System.out.println("6. Filter Phones by ...");
                 System.out.println("7. Exit");
                 System.out.print("Enter your choice: ");
 
@@ -60,11 +60,11 @@ public class Main {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
                             int id = jsonObject.getInt("id");
-                             int brandId = jsonObject.getInt("brandId");
-                             String model = jsonObject.getString("model");
-                             int quantity = jsonObject.getInt("quantity");
-                             double price  = jsonObject.getDouble("price");
-                             mobilePhones.add(new MobilePhone(id, brandId, model, quantity, price));
+                            int brandId = jsonObject.getInt("brandId");
+                            String model = jsonObject.getString("model");
+                            int quantity = jsonObject.getInt("quantity");
+                            double price = jsonObject.getDouble("price");
+                            mobilePhones.add(new MobilePhone(id, brandId, model, quantity, price));
                         }
                         for (MobilePhone mobilePhone : mobilePhones) {
                             System.out.println(mobilePhone);
@@ -91,6 +91,7 @@ public class Main {
 //                        mainInstance.update(daoMobilePhone);
                         break;
                     case 6:
+
 //                        List<MobilePhone> filteredPhones = mainInstance.getFilteredPhones(daoMobilePhone);
 //                        System.out.println("Filtered Phones by Price:");
 //                        for (MobilePhone phone : filteredPhones) {
@@ -107,8 +108,7 @@ public class Main {
                 }
             }
 
-        }
-        catch (UnknownHostException e) {
+        } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);

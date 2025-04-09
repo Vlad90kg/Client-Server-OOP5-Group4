@@ -3,6 +3,7 @@ package group4.group4.server.dao;
 import group4.group4.Exceptions.DaoException;
 import group4.group4.server.dto.MobilePhone;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,13 +15,24 @@ import java.util.Scanner;
 
 public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
 
+    private DataSource ds;
+
+    public DaoMobilePhoneImpl(DataSource ds) {
+        this.ds = ds;
+    }
+
+    public DaoMobilePhoneImpl() {
+    }
+
     // Feature 1
     @Override
     public List<MobilePhone> getAll() throws DaoException {
+
         String sql = "select * from mobile_phone";
         List<MobilePhone> mobilePhones = new ArrayList<>();
         try(Connection connection = getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            PreparedStatement preparedStatement = ds == null? connection.prepareStatement(sql): ds.getConnection().prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
@@ -31,7 +43,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
                     MobilePhone phone = new MobilePhone(id,brand_id,model,quantity,price);
                     mobilePhones.add(phone);
                 }
-        }catch (SQLException e){
+        } catch (SQLException e){
             throw new DaoException("Error fetching expenses: " + e.getMessage());
         }
         return mobilePhones;
