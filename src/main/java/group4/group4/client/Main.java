@@ -60,11 +60,12 @@ public class Main {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
                             int id = jsonObject.getInt("id");
-                            int brandId = jsonObject.getInt("brandId");
+                            int brandId = jsonObject.getInt("brand_id");
                             String model = jsonObject.getString("model");
                             int quantity = jsonObject.getInt("quantity");
                             double price = jsonObject.getDouble("price");
-                            mobilePhones.add(new MobilePhone(id, brandId, model, quantity, price));
+
+                            mobilePhones.add(new MobilePhone(jsonObject));
                         }
                         for (MobilePhone mobilePhone : mobilePhones) {
                             System.out.println(mobilePhone);
