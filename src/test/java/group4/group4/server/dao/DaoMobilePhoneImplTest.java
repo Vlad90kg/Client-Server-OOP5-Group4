@@ -85,11 +85,20 @@ class DaoMobilePhoneImplTest {
 //        assertEquals(0, dmpi.delete(16));
 //    }
 //
-//    @Test
-//    void feature4() throws DaoException {
-//        MobilePhone testPhone = new MobilePhone(1, 1, "iPhone 14 Pro", 15, 999.99);
-//        assertEquals(testPhone, dmpi.insert(testPhone));
-//    }
+    @Test
+    void feature4() throws SQLException {
+        ds = mock(DataSource.class);
+        c = mock(Connection.class);
+        ps = mock(PreparedStatement.class);
+        rs = mock(ResultSet.class);
+        DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl(ds);
+        when(ds.getConnection()).thenReturn(c);
+        when(c.prepareStatement("INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?);")).thenReturn(ps);
+        when(ps.executeUpdate()).thenReturn(1);
+        MobilePhone testPhone = new MobilePhone(1, 1, "iPhone 14 Pro", 15, 999.99);
+        assertEquals(testPhone, dmpi.insert(testPhone));
+
+    }
 //
 //    @Test
 //    void feature5() throws DaoException {

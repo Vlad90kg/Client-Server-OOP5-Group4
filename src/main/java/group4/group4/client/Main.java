@@ -86,6 +86,7 @@ public class Main {
 //                        mainInstance.deletePhoneById(daoMobilePhone);
                         break;
                     case 4:
+                        System.out.println("Enter : ");
 //                        MobilePhone insertedPhone = mainInstance.insert(daoMobilePhone);
 //                        System.out.println("Inserted Phone: " + insertedPhone);
                         break;

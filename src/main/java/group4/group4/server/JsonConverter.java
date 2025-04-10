@@ -26,8 +26,7 @@ public class JsonConverter {
     // Feature 8
     String phoneToJson(MobilePhone phone) {
         if (phone == null) {
-            System.out.println("Phone is null");
-            return null;
+            return "Phone ID has not been found";
         }
         else {
             JSONObject jsonObject = serializeMobilePhone(phone);

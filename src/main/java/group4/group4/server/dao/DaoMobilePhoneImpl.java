@@ -31,7 +31,6 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
         String sql = "select * from mobile_phone";
         List<MobilePhone> mobilePhones = new ArrayList<>();
         try(Connection connection = getConnection();
-
             PreparedStatement preparedStatement = ds == null? connection.prepareStatement(sql): ds.getConnection().prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -83,25 +82,43 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     // Feature 4
     @Override
     public MobilePhone insert(MobilePhone mobilePhone) throws DaoException {
-        Connection connection = null;
-        PreparedStatement statement = null;
+        String query = "INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?);";
 
-        try {
-            connection = this.getConnection();
-            String query = "INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?);";
-
-            statement = connection.prepareStatement(query);
+        try (
+                Connection connection = (ds != null ? ds.getConnection() : getConnection());
+                PreparedStatement statement = connection.prepareStatement(query)
+        ) {
             statement.setInt(1, mobilePhone.getBrandId());
             statement.setString(2, mobilePhone.getModel());
             statement.setInt(3, mobilePhone.getQuantity());
             statement.setDouble(4, mobilePhone.getPrice());
-
             statement.executeUpdate();
         }
         catch (SQLException e) { throw new DaoException("insert() " + e.getMessage()); }
 
         return mobilePhone;
     }
+//    @Override
+//    public MobilePhone insert(MobilePhone mobilePhone) throws DaoException {
+//        Connection connection = null;
+//        PreparedStatement statement = null;
+//
+//        try {
+//            connection = this.getConnection();
+//            String query = "INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?);";
+//
+//            statement = connection.prepareStatement(query);
+//            statement.setInt(1, mobilePhone.getBrandId());
+//            statement.setString(2, mobilePhone.getModel());
+//            statement.setInt(3, mobilePhone.getQuantity());
+//            statement.setDouble(4, mobilePhone.getPrice());
+//
+//            statement.executeUpdate();
+//        }
+//        catch (SQLException e) { throw new DaoException("insert() " + e.getMessage()); }
+//
+//        return mobilePhone;
+//    }
 
     // Feature 5
     @Override
