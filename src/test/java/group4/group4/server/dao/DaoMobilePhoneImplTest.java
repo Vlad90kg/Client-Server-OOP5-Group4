@@ -10,10 +10,8 @@ import java.sql.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 
@@ -24,9 +22,6 @@ class DaoMobilePhoneImplTest {
 
     @Mock
     Connection c;
-
-    @Mock
-    Statement st;
 
     @Mock
     PreparedStatement ps;
@@ -40,6 +35,7 @@ class DaoMobilePhoneImplTest {
         c = mock(Connection.class);
         ps = mock(PreparedStatement.class);
         rs = mock(ResultSet.class);
+
         DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl(ds);
         when(ds.getConnection()).thenReturn(c);
         when(c.prepareStatement("select * from mobile_phone")).thenReturn(ps);
@@ -63,53 +59,91 @@ class DaoMobilePhoneImplTest {
                 );
     }
 
-//    @Test
-//    void feature2() throws DaoException  {
-//        MobilePhone testPhone = new MobilePhone(1, 1, "iPhone 14 Pro", 15, 999.99);
-//        assertNull(dmpi.getById(15));
-//
-//        MobilePhone test = dmpi.getById(1);
-//
-//        assertAll(
-//                () -> assertEquals(testPhone.getId(), test.getId()),
-//                () -> assertEquals(testPhone.getBrandId(), test.getBrandId()),
-//                () -> assertEquals(testPhone.getModel(), test.getModel()),
-//                () -> assertEquals(testPhone.getQuantity(), test.getQuantity()),
-//                () -> assertEquals(testPhone.getPrice(), test.getPrice())
-//        );
-//    }
-//
-//    @Test
-//    void feature3() throws DaoException {
-//        assertEquals(1, dmpi.delete(2));
-//        assertEquals(0, dmpi.delete(16));
-//    }
-//
     @Test
-    void feature4() throws SQLException {
+    void feature2() throws SQLException {
         ds = mock(DataSource.class);
         c = mock(Connection.class);
         ps = mock(PreparedStatement.class);
         rs = mock(ResultSet.class);
         DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl(ds);
+
         when(ds.getConnection()).thenReturn(c);
-        when(c.prepareStatement("INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?);")).thenReturn(ps);
-        when(ps.executeUpdate()).thenReturn(1);
-        MobilePhone testPhone = new MobilePhone(1, 1, "iPhone 14 Pro", 15, 999.99);
-        assertEquals(testPhone, dmpi.insert(testPhone));
+        when(c.prepareStatement("SELECT * FROM mobile_phone WHERE ID = ?")).thenReturn(ps);
+        when(ps.executeQuery()).thenReturn(rs);
 
+        when(rs.next()).thenReturn(true);
+        when(rs.getInt("id")).thenReturn(1);
+        when(rs.getInt("brand_id")).thenReturn(1);
+        when(rs.getString("model")).thenReturn("phone");
+        when(rs.getInt("quantity")).thenReturn(10);
+        when(rs.getDouble("price")).thenReturn(100.0);
+        MobilePhone testPhone = dmpi.getById(1);
+
+        when(rs.next()).thenReturn(false);
+        MobilePhone nullPhone = dmpi.getById(15);
+
+        assertThat(testPhone).isEqualTo(new MobilePhone(1, 1, "phone", 10, 100.0));
+        assertThat(nullPhone).isEqualTo(null);
     }
-//
-//    @Test
-//    void feature5() throws DaoException {
-//        MobilePhone testPhone = new MobilePhone(1, "iPhone 16 Pro Max", 50, 1989.99);
-//        assertEquals(1, dmpi.update(3, testPhone));
-//    }
 
+    @Test
+    void feature3() throws SQLException {
+        ds = mock(DataSource.class);
+        c = mock(Connection.class);
+        ps = mock(PreparedStatement.class);
+        DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl(ds);
 
-        @Test
-    void feature6() throws DaoException {
+        when(ds.getConnection()).thenReturn(c);
+        when(c.prepareStatement("DELETE FROM phone_specifications WHERE phone_id IN (SELECT id FROM mobile_phone WHERE id = ?)")).thenReturn(ps);
+        when(c.prepareStatement("DELETE FROM mobile_phone WHERE id = ?")).thenReturn(ps);
+
+        when(ps.executeUpdate()).thenReturn(1);
+        assertThat(dmpi.delete(2)).isEqualTo(1);
+
+        when(ps.executeUpdate()).thenReturn(0);
+        assertThat(dmpi.delete(16)).isEqualTo(0);
+    }
+
+    @Test
+    void  feature4() throws SQLException {
+        ds = mock(DataSource.class);
+        c = mock(Connection.class);
+        ps = mock(PreparedStatement.class);
+        DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl(ds);
+
+        when(ds.getConnection()).thenReturn(c);
+        when(c.prepareStatement("INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?)")).thenReturn(ps);
+
+        when(ps.executeUpdate()).thenReturn(1);
+        MobilePhone testPhone = new MobilePhone(1, "iPhone 14 Pro", 15, 999.99);
+        assertThat(dmpi.insert(testPhone)).isEqualTo(testPhone);
+    }
+
+    @Test
+    void feature5() throws SQLException {
+        ds = mock(DataSource.class);
+        c = mock(Connection.class);
+        ps = mock(PreparedStatement.class);
+        DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl(ds);
+
+        when(ds.getConnection()).thenReturn(c);
+        when(c.prepareStatement("UPDATE mobile_phone SET brand_id = ?, model = ?, quantity = ?, price = ? WHERE id = ?")).thenReturn(ps);
+
+        when(ps.executeUpdate()).thenReturn(1);
+        assertThat(dmpi.update(1, new MobilePhone(1, "iPhone 16 Pro Max", 50, 1989.99))).isEqualTo(1);
+
+        when(ps.executeUpdate()).thenReturn(0);
+        assertThat(dmpi.update(16, new MobilePhone(1, "iPhone 16 Pro Max", 50, 1989.99))).isEqualTo(0);
+    }
+
+    @Test
+    void feature6() throws SQLException {
+        ds = mock(DataSource.class);
+        c = mock(Connection.class);
+        ps = mock(PreparedStatement.class);
+        when(ds.getConnection()).thenReturn(c);
         DaoMobilePhoneImpl dmpi = spy(new DaoMobilePhoneImpl(ds));
+
             List<MobilePhone> fixedPhones = Arrays.asList(
                     new MobilePhone(1, 1, "phone1", 1, 100.0),
                     new MobilePhone(2, 2, "phone2", 2, 1000.0),
@@ -124,12 +158,12 @@ class DaoMobilePhoneImplTest {
 
             List<MobilePhone> filteredList = dmpi.findByFilter(comparator, 500);
 
-            List<MobilePhone> expecteList = Arrays.asList(
+            List<MobilePhone> expectedList = Arrays.asList(
                     new MobilePhone(3, 3, "phone3", 3, 5000.0),
                     new MobilePhone(5, 4, "phone5", 5, 505.0),
                     new MobilePhone(2, 2, "phone2", 2, 1000.0)
                     );
-            assertThat(filteredList).containsExactlyInAnyOrderElementsOf(filteredList);
+            assertThat(expectedList).containsExactlyInAnyOrderElementsOf(filteredList);
     }
 
 }

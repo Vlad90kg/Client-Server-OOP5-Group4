@@ -30,8 +30,8 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
 
         String sql = "select * from mobile_phone";
         List<MobilePhone> mobilePhones = new ArrayList<>();
-        try(Connection connection = getConnection();
-            PreparedStatement preparedStatement = ds == null? connection.prepareStatement(sql): ds.getConnection().prepareStatement(sql);
+        try(
+            PreparedStatement preparedStatement = ds == null? getConnection().prepareStatement(sql): ds.getConnection().prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
@@ -51,19 +51,14 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     // Feature 2
     @Override
     public MobilePhone getById(int Id) throws DaoException {
-
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         MobilePhone phone2 = null;
+        String query = "SELECT * FROM mobile_phone WHERE ID = ?";
 
-        try {
-            connection = this.getConnection();
-            String query = "SELECT * FROM mobile_phone WHERE ID = ?";
-            preparedStatement = connection.prepareStatement(query);
+        try(
+            PreparedStatement preparedStatement = ds == null? getConnection().prepareStatement(query): ds.getConnection().prepareStatement(query);) {
             preparedStatement.setInt(1, Id);
 
-            resultSet = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int brand_id = resultSet.getInt("brand_id");
@@ -82,7 +77,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     // Feature 4
     @Override
     public MobilePhone insert(MobilePhone mobilePhone) throws DaoException {
-        String query = "INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?);";
+        String query = "INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?)";
 
         try (
                 Connection connection = (ds != null ? ds.getConnection() : getConnection());
@@ -123,14 +118,11 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     // Feature 5
     @Override
     public int update(int id, MobilePhone mobilePhone) throws DaoException {
-        Connection connection = null;
-        PreparedStatement statement = null;
+        String query = "UPDATE mobile_phone SET brand_id = ?, model = ?, quantity = ?, price = ? WHERE id = ?";
+        try (
+                PreparedStatement statement = ds == null? getConnection().prepareStatement(query): ds.getConnection().prepareStatement(query);
+                ){
 
-        try {
-            connection = this.getConnection();
-            String query = "UPDATE mobile_phone SET brand_id = ?, model = ?, quantity = ?, price = ? WHERE id = ?";
-
-            statement = connection.prepareStatement(query);
             statement.setInt(1, mobilePhone.getBrandId());
             statement.setString(2, mobilePhone.getModel());
             statement.setInt(3, mobilePhone.getQuantity());
@@ -145,23 +137,27 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     // Feature 3
     @Override
     public int delete(int id)throws DaoException {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
+        String deletePhoneSpecificationsQuery = "DELETE FROM phone_specifications WHERE phone_id IN (SELECT id FROM mobile_phone WHERE id = ?)";
+        String deleteMobilePhoneQuery = "DELETE FROM mobile_phone WHERE id = ?";
 
-        try {
-            connection = this.getConnection();
+        try (
+                Connection connection = (ds != null ? ds.getConnection() : getConnection());
+        ){
+            connection.setAutoCommit(false);
+            try( PreparedStatement preparedStatement = connection.prepareStatement(deletePhoneSpecificationsQuery);
+            ){
+                preparedStatement.setInt(1, id);
+                preparedStatement.executeUpdate();
+            }
+            int affectedPhones = 0;
+            try( PreparedStatement preparedStatement = connection.prepareStatement(deleteMobilePhoneQuery);){
+                preparedStatement.setInt(1, id);
+                affectedPhones = preparedStatement.executeUpdate();
+            }
 
-            String deletePhoneSpecificationsQuery = "DELETE FROM phone_specifications WHERE phone_id IN (SELECT id FROM mobile_phone WHERE id = ?)";
-            preparedStatement = connection.prepareStatement(deletePhoneSpecificationsQuery);
-            preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
 
-            String deleteMobilePhoneQuery = "DELETE FROM mobile_phone WHERE id = ?";
-            preparedStatement = connection.prepareStatement(deleteMobilePhoneQuery);
-            preparedStatement.setInt(1, id);
-
-
-            return preparedStatement.executeUpdate();
+            connection.commit();
+            return affectedPhones;
 
         } catch (SQLException e) {
             throw new DaoException("delete() " + e.getMessage());
