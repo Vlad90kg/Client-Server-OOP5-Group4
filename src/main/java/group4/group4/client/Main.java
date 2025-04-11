@@ -1,8 +1,7 @@
 package group4.group4.client;
 
 import group4.group4.Exceptions.DaoException;
-import group4.group4.server.dao.DaoMobilePhone;
-import group4.group4.server.dao.DaoMobilePhoneImpl;
+
 import group4.group4.server.dto.MobilePhone;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,7 +10,6 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 

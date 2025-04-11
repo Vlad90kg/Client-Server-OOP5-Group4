@@ -1,6 +1,5 @@
 package group4.group4.server.dao;
 
-import group4.group4.Exceptions.DaoException;
 import group4.group4.server.dto.MobilePhone;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

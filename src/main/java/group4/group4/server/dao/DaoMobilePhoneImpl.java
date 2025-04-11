@@ -93,27 +93,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
 
         return mobilePhone;
     }
-//    @Override
-//    public MobilePhone insert(MobilePhone mobilePhone) throws DaoException {
-//        Connection connection = null;
-//        PreparedStatement statement = null;
-//
-//        try {
-//            connection = this.getConnection();
-//            String query = "INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?);";
-//
-//            statement = connection.prepareStatement(query);
-//            statement.setInt(1, mobilePhone.getBrandId());
-//            statement.setString(2, mobilePhone.getModel());
-//            statement.setInt(3, mobilePhone.getQuantity());
-//            statement.setDouble(4, mobilePhone.getPrice());
-//
-//            statement.executeUpdate();
-//        }
-//        catch (SQLException e) { throw new DaoException("insert() " + e.getMessage()); }
-//
-//        return mobilePhone;
-//    }
+
 
     // Feature 5
     @Override
