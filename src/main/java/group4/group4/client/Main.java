@@ -72,9 +72,16 @@ public class Main {
 
                         break;
                     case 2:
-                        // TODO add error handling for entered value
-                        System.out.print("Enter ID of phone to find: ");
-                        int idToFind = Integer.parseInt(scanner.nextLine());
+                        int idToFind = -1;
+                        boolean integerIsValid = true;
+
+                        while (true) {
+                            System.out.print("Enter ID of phone to find: ");
+                            try { idToFind = Integer.parseInt(scanner.nextLine()); }
+                            catch (NumberFormatException e) { integerIsValid = false; }
+                            finally { if (integerIsValid) break; else integerIsValid = true; }
+                        }
+
                         String req = "getById." + idToFind;
                         out.println(req);
                         String res = in.readLine();
