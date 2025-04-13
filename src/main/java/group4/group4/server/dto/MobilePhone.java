@@ -12,6 +12,7 @@ public class MobilePhone implements Serializable {
     private int quantity;
     private double price;
 
+    private Specifications specifications;
     public MobilePhone(double price) {
         this.price = price;
     }
@@ -32,11 +33,37 @@ public class MobilePhone implements Serializable {
     }
 
     public MobilePhone(JSONObject jsonObject) {
-        this.id = jsonObject.getInt("id");
+        if(jsonObject.has("id")) {
+            this.id = jsonObject.getInt("id");
+        }
         this.brand_id = jsonObject.getInt("brand_id");
         this.model = jsonObject.getString("model");
         this.quantity = jsonObject.getInt("quantity");
         this.price = jsonObject.getDouble("price");
+    }
+
+    public MobilePhone(Specifications specifications,int brand_id, String model, int quantity, double price) {
+        this.specifications = specifications;
+        this.brand_id = brand_id;
+        this.model = model;
+        this.quantity = quantity;
+        this.price = price;
+    }
+
+    public int getBrand_id() {
+        return brand_id;
+    }
+
+    public void setBrand_id(int brand_id) {
+        this.brand_id = brand_id;
+    }
+
+    public Specifications getSpecifications() {
+        return specifications;
+    }
+
+    public void setSpecifications(Specifications specifications) {
+        this.specifications = specifications;
     }
 
     public MobilePhone() {
@@ -103,11 +130,10 @@ public class MobilePhone implements Serializable {
 
     @Override
     public String toString() {
-        return "MobilePhone{" +
-                " id='" + id + '\'' +
-                " model='" + model + '\'' +
-                ", quantity=" + quantity +
-                ", price=" + price +
-                '}';
+        return "MobilePhone: " +
+                " | id: " + id + '\'' +
+                " | model: " + model + '\'' +
+                " | quantity: " + quantity +
+                " | price: " + price;
     }
 }
