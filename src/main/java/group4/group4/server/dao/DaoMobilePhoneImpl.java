@@ -43,7 +43,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
                     mobilePhones.add(phone);
                 }
         } catch (SQLException e){
-            throw new DaoException("Error fetching expenses: " + e.getMessage());
+            throw new DaoException("Error fetching mobile phones: " + e.getMessage());
         }
         return mobilePhones;
     }
@@ -98,6 +98,8 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     // Feature 5
     @Override
     public int update(int id, MobilePhone mobilePhone) throws DaoException {
+        if (id <= 0) throw new IllegalArgumentException("ID must be greater than zero");
+
         String query = "UPDATE mobile_phone SET brand_id = ?, model = ?, quantity = ?, price = ? WHERE id = ?";
         try (PreparedStatement statement = ds == null? getConnection().prepareStatement(query): ds.getConnection().prepareStatement(query);
                 ){
