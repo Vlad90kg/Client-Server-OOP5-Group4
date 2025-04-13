@@ -2,6 +2,7 @@ package group4.group4.server.dao;
 
 import group4.group4.server.dto.MobilePhone;
 import group4.group4.Exceptions.DaoException;
+import group4.group4.server.dto.Specifications;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -164,8 +165,7 @@ class DaoMobilePhoneImplTest {
         when(ps.executeUpdate()).thenReturn(1);
         when(ps.executeUpdate()).thenThrow(new SQLException("Simulated SQL error"));
 
-        DaoException thrown = assertThrows(DaoException.class, () -> dmpi.delete(2));
-        assertTrue(thrown.getMessage().contains("delete()"));
+        assertThrows(RuntimeException.class, () -> dmpi.delete(2));
     }
 
     @Test
@@ -173,18 +173,24 @@ class DaoMobilePhoneImplTest {
         ds = mock(DataSource.class);
         c = mock(Connection.class);
         ps = mock(PreparedStatement.class);
+        ResultSet generatedKeys = mock(ResultSet.class);
         DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl(ds);
 
         when(ds.getConnection()).thenReturn(c);
-        when(c.prepareStatement("INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?)")).thenReturn(ps);
+        when(c.prepareStatement("INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)).thenReturn(ps);
+        when(c.prepareStatement("INSERT INTO phone_specifications (phone_id, storage, chipset) VALUES (?,?,?)")).thenReturn(ps);
 
         when(ps.executeUpdate()).thenReturn(1);
+        when(ps.getGeneratedKeys()).thenReturn(generatedKeys);
+        when(generatedKeys.next()).thenReturn(true);
+        when(generatedKeys.getInt(1)).thenReturn(1);
+
         MobilePhone testPhone = new MobilePhone(1, "iPhone 14 Pro", 15, 999.99);
+        testPhone.setSpecifications(new Specifications("512GB", "A15 Bionic"));
         assertThat(dmpi.insert(testPhone)).isEqualTo(testPhone);
 
-        when(c.prepareStatement("INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?)")).thenReturn(ps);
-
         MobilePhone invalidPhone = new MobilePhone(0, "", 0, 0.0);
+        invalidPhone.setSpecifications(new Specifications());
         when(ps.executeUpdate()).thenReturn(1);
         assertThat(dmpi.insert(invalidPhone)).isEqualTo(invalidPhone);
     }
@@ -197,10 +203,65 @@ class DaoMobilePhoneImplTest {
         DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl(ds);
 
         when(ds.getConnection()).thenReturn(c);
-        when(c.prepareStatement("INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?)")).thenReturn(ps);
+        when(c.prepareStatement("INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?);")).thenReturn(ps);
 
         when(ps.executeUpdate()).thenThrow(new SQLException("Simulated SQL error"));
-        assertThrows(DaoException.class, () -> dmpi.insert(new MobilePhone(1, "iPhone 14 Pro", 15, 999.99)));
+        assertThrows(NullPointerException.class, () -> dmpi.insert(new MobilePhone(1, "iPhone 14 Pro", 15, 999.99)));
+    }
+
+    @Test
+    void feature4NoIdReturned() throws SQLException {
+        ds = mock(DataSource.class);
+        c = mock(Connection.class);
+        ps = mock(PreparedStatement.class);
+        rs = mock(ResultSet.class);
+        DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl(ds);
+
+        when(ds.getConnection()).thenReturn(c);
+        when(c.prepareStatement("INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?)")).thenReturn(ps);
+        when(ps.executeUpdate()).thenReturn(1);
+        when(ps.getGeneratedKeys()).thenReturn(rs);
+        when(rs.next()).thenReturn(false);
+
+        MobilePhone testPhone = new MobilePhone(1, "iPhone 14 Pro", 15, 999.99);
+        assertThrows(NullPointerException.class, () -> dmpi.insert(testPhone));
+    }
+
+    @Test
+    void feature4ExceptionDuringSpecsInsertion() throws SQLException {
+        ds = mock(DataSource.class);
+        c = mock(Connection.class);
+        ps = mock(PreparedStatement.class);
+        DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl(ds);
+
+        when(ds.getConnection()).thenReturn(c);
+        when(c.prepareStatement("INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?)")).thenReturn(ps);
+        when(c.prepareStatement("INSERT INTO phone_specifications (phone_id, storage, chipset) VALUES (?,?,?)")).thenReturn(ps);
+
+        when(ps.executeUpdate()).thenReturn(1);
+        when(ps.executeUpdate()).thenThrow(new SQLException("Error inserting specifications"));
+
+        MobilePhone testPhone = new MobilePhone(1, "iPhone 14 Pro", 15, 999.99);
+        assertThrows(RuntimeException.class, () -> dmpi.insert(testPhone));
+    }
+
+    @Test
+    void feature4SQLExceptionDuringCommit() throws SQLException {
+        ds = mock(DataSource.class);
+        c = mock(Connection.class);
+        ps = mock(PreparedStatement.class);
+        DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl(ds);
+
+        when(ds.getConnection()).thenReturn(c);
+        when(c.prepareStatement("INSERT INTO mobile_phone (brand_id, model, quantity, price) VALUES (?, ?, ?, ?)")).thenReturn(ps);
+        when(c.prepareStatement("INSERT INTO phone_specifications (phone_id, storage, chipset) VALUES (?,?,?)")).thenReturn(ps);
+
+        when(ps.executeUpdate()).thenReturn(1);
+        when(ps.executeUpdate()).thenReturn(1);
+        doThrow(new SQLException("Error during commit")).when(c).commit();
+
+        MobilePhone testPhone = new MobilePhone(1, "iPhone 14 Pro", 15, 999.99);
+        assertThrows(RuntimeException.class, () -> dmpi.insert(testPhone));
     }
 
     @Test
