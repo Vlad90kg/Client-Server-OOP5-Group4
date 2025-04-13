@@ -2,6 +2,7 @@ package group4.group4.server;
 
 
 import group4.group4.server.dto.MobilePhone;
+import group4.group4.server.dto.Specifications;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class JsonConverter {
     // Feature 7
-    String phonesListJson(List<MobilePhone> phonesList){
+    public String phonesListJson(List<MobilePhone> phonesList){
         if(phonesList == null){
             System.out.println("PhonesList is null");
             return null;
@@ -24,7 +25,7 @@ public class JsonConverter {
     }
 
     // Feature 8
-    String phoneToJson(MobilePhone phone) {
+    public String phoneToJson(MobilePhone phone) {
         if (phone == null) {
             return "Phone ID has not been found";
         }
@@ -35,7 +36,7 @@ public class JsonConverter {
         }
     }
 
-    JSONObject serializeMobilePhone(MobilePhone phone) {
+    public JSONObject serializeMobilePhone(MobilePhone phone) {
         JSONObject jsonObject = new JSONObject();
 
         jsonObject.put("id", phone.getId());
@@ -43,6 +44,22 @@ public class JsonConverter {
         jsonObject.put("model", phone.getModel());
         jsonObject.put("quantity", phone.getQuantity());
         jsonObject.put("price", phone.getPrice());
+        System.out.println("getspect in converter" + phone.getSpecifications());
+        System.out.println(jsonObject);
+        return jsonObject;
+    }
+
+    public JSONObject serializeSpecifications(MobilePhone mobilePhone) {
+        if (mobilePhone == null) {
+            System.out.println("MobilePhone is null");
+            return null;
+        }
+        JSONObject jsonObject = new JSONObject();
+        Specifications spec = mobilePhone.getSpecifications();
+        jsonObject.put("ph  one_id", mobilePhone.getId());
+        jsonObject.put("storage", spec.getStorage());
+        jsonObject.put("chipset", spec.getChipset());
+
         return jsonObject;
     }
 

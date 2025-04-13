@@ -4,86 +4,100 @@ import group4.group4.Exceptions.DaoException;
 import group4.group4.server.dao.DaoMobilePhone;
 import group4.group4.server.dao.DaoMobilePhoneImpl;
 import group4.group4.server.dto.MobilePhone;
+import group4.group4.server.dto.Specifications;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
 
 public class ClientHandler implements Runnable {
     private final Socket clientSocket;
+
     public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
 
     @Override
     public void run() {
-        try(
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));)
-        {
+        try (
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));) {
             DaoMobilePhone daoMobilePhone = new DaoMobilePhoneImpl();
             System.out.println("Client connected");
             JsonConverter jsonConverter = new JsonConverter();
-            String inputLine;
+            String inputLine, jsonString = "";
 
             boolean exit = false;
             while (!exit) {
                 inputLine = in.readLine();
-                int intArgument = 0;
-                double price = 0;
-                if(inputLine.startsWith("getById")) {
-                    intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
-                    inputLine = "getById";
-                } else if (inputLine.startsWith("getByFilter")) {
-                    price = Double.parseDouble(inputLine.substring(inputLine.indexOf('.') + 1));
-                    inputLine = "getByFilter";
+                if (inputLine == null) {
+                    System.out.println("Client disconnected");
+                } else {
+                    int intArgument = 0;
+                    double price = 0;
+                    if (inputLine.startsWith("getById")) {
+                        intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
+                        inputLine = "getById";
+                    } else if (inputLine.startsWith("getByFilter")) {
+                        price = Double.parseDouble(inputLine.substring(inputLine.indexOf('.') + 1));
+                        inputLine = "getByFilter";
+                    } else if (inputLine.startsWith("insertPhone")) {
+                        jsonString = inputLine.substring(inputLine.indexOf('.') + 1);
+                        inputLine = "insertPhone";
+                    }
+
+                    switch (inputLine) {
+                        case "getAll":
+                            String getAllString = jsonConverter.phonesListJson(getAllPhones(daoMobilePhone));
+                            out.println(getAllString);
+                            break;
+                        case "getById":
+                            String getByIdString = jsonConverter.phoneToJson(getPhoneById(daoMobilePhone, intArgument));
+                            out.println(getByIdString);
+                            break;
+                        case "3":
+//                        mainInstance.deletePhoneById(daoMobilePhone);
+                            break;
+                        case "insertPhone":
+                            JSONArray jsonArray = new JSONArray(jsonString);
+
+                            MobilePhone toInsert = new MobilePhone(jsonArray.getJSONObject(0));
+                            Specifications specifications = new Specifications(jsonArray.getJSONObject(1));
+                            toInsert.setSpecifications(specifications);
+                            String insertPhoneString = jsonConverter.phoneToJson(daoMobilePhone.insert(toInsert));
+                            out.println(insertPhoneString);
+                            break;
+                        case "5":
+//                        mainInstance.update(daoMobilePhone);
+                            break;
+                        case "getByFilter":
+                            String findByFilter = jsonConverter.phonesListJson(getFilteredPhones(daoMobilePhone, price));
+                            out.println(findByFilter);
+                            break;
+                        case "exit":
+                            exit = true;
+                            System.out.println("Exiting...");
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please try again.");
+                    }
                 }
 
-                switch (inputLine) {
-                    case "getAll":
-                        String getAllString = jsonConverter.phonesListJson(getAllPhones(daoMobilePhone));
-                        out.println(getAllString);
-                        break;
-                    case "getById":
-                        String getByIdString = jsonConverter.phoneToJson(getPhoneById(daoMobilePhone, intArgument));
-                        out.println(getByIdString);
-                        break;
-                    case "3":
-//                        mainInstance.deletePhoneById(daoMobilePhone);
-                        break;
-                    case "insertPhone":
-//                        MobilePhone insertedPhone = mainInstance.insert(daoMobilePhone);
-//                        System.out.println("Inserted Phone: " + insertedPhone);
-                        break;
-                    case "5":
-//                        mainInstance.update(daoMobilePhone);
-                        break;
-                    case "getByFilter":
-                        String  findByFilter = jsonConverter.phonesListJson(getFilteredPhones(daoMobilePhone, price));
-                        out.println(findByFilter);
-//                        List<MobilePhone> filteredPhones = mainInstance.getFilteredPhones(daoMobilePhone);
-//                        System.out.println("Filtered Phones by Price:");
-//                        for (MobilePhone phone : filteredPhones) {
-//                            System.out.println(phone);
-//                        }
-                        break;
-                    case "exit":
-                        exit = true;
-                        System.out.println("Exiting...");
-                        break;
-                    default:
-                        System.out.println("Invalid choice. Please try again.");
-                }
             }
 
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (DaoException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -137,37 +151,9 @@ public class ClientHandler implements Runnable {
 //        }
 //    }
 //
-//    public MobilePhone insert(DaoMobilePhone daoMobilePhone) throws DaoException {
-//        // Feature 4
-//        String newModel = "";
-//        int newBrandId = 0, newQuantity = 0;
-//        double newPrice = 0;
-//        boolean validInput = false;
-//        while (!validInput) {
-//            try {
-//                System.out.print("Enter brand ID: ");
-//                newBrandId = Integer.parseInt(scanner.nextLine());
-//                System.out.print("Enter model: ");
-//                newModel = scanner.nextLine();
-//                System.out.print("Enter quantity: ");
-//                newQuantity = Integer.parseInt(scanner.nextLine());
-//                System.out.print("Enter price: ");
-//                newPrice = Double.parseDouble(scanner.nextLine());
-//                if (newBrandId > 0 || !newModel.isEmpty() || newQuantity >= 0 || newPrice > 0) {
-//                    validInput = true;
-//                }
-//
-//            } catch (NumberFormatException e) {
-//                System.out.println("Invalid input. Please enter a number.");
-//            }
-//            if (!validInput) {
-//                System.out.println("Invalid input. Please try again.");
-//            }
-//        }
-//        return daoMobilePhone.insert(new MobilePhone(newBrandId, newModel, newQuantity, newPrice));
-//
-//    }
-//
+
+
+    //
 //    public void update(DaoMobilePhone daoMobilePhone) throws DaoException {
 //        // Feature 5
 //        String updatedModel = "";

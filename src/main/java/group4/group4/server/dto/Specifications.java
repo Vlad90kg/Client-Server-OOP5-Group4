@@ -39,6 +39,10 @@ public class Specifications {
         this.storage = storage;
         this.chipset = chipset;
     }
+    public Specifications(String storage, String chipset) {
+        this.storage = storage;
+        this.chipset = chipset;
+    }
     public Specifications(){
     }
 

@@ -2,6 +2,7 @@ package group4.group4.client;
 
 import group4.group4.Exceptions.DaoException;
 
+import group4.group4.server.JsonConverter;
 import group4.group4.server.dto.MobilePhone;
 import group4.group4.server.dto.Specifications;
 import group4.group4.util.InputValidation;
@@ -28,11 +29,12 @@ public class Main {
             PrintWriter out = new PrintWriter(outputStream, true);
             System.out.println("The client is running and has connected to the server.");
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            int id = 0, quantity = 0;
-            String model = "", storage = "", chipset = "", input = "";
+            int id = 0, quantity = 0, brand_id = 0;
+            String model = "", storage = "", chipset = "", input, response;
             double price = 0.0;
             boolean exit = false;
             boolean valid = false;
+            MobilePhone mobilePhone;
             while (!exit) {
 
                 System.out.println("=== Mobile Phone Management System ===");
@@ -57,7 +59,7 @@ public class Main {
                     case 1:
                         String getAllString = "getAll";
                         out.println(getAllString);
-                        String response = in.readLine();
+                        response = in.readLine();
                         JSONArray jsonArray = new JSONArray(response);
                         List<MobilePhone> mobilePhones = new ArrayList<>();
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -65,11 +67,9 @@ public class Main {
 
                             mobilePhones.add(new MobilePhone(jsonObject));
                         }
-                        for (MobilePhone mobilePhone : mobilePhones) {
-                            System.out.println(mobilePhone);
+                        for (MobilePhone mp : mobilePhones) {
+                            System.out.println(mp);
                         }
-
-
                         break;
                     case 2:
                         int idToFind = -1;
@@ -107,6 +107,13 @@ public class Main {
                         }
                         valid = false;
                         while (!valid) {
+                            System.out.print("Brand ID: ");
+                            input = scanner.nextLine();
+                            valid = InputValidation.validateInt(input);
+                            if (valid) brand_id = Integer.parseInt(input);
+                        }
+                        valid = false;
+                        while (!valid) {
                             System.out.print("Model: ");
                             input = scanner.nextLine();
                             valid = InputValidation.validateString(input);
@@ -118,7 +125,7 @@ public class Main {
                             System.out.print("Quantity: ");
                             input = scanner.nextLine();
                             valid = InputValidation.validateInt(input);
-                            if (valid)  quantity = Integer.parseInt(input);
+                            if (valid) quantity = Integer.parseInt(input);
                         }
                         valid = false;
                         while (!valid) {
@@ -143,27 +150,24 @@ public class Main {
                             System.out.print("Chipset: ");
                             input = scanner.nextLine();
                             valid = InputValidation.validateString(input);
-                            if(valid) chipset = input;
+                            if (valid) chipset = input;
                         }
 
-
-                        JSONObject specificationsJson = new JSONObject();
-                        JSONObject phonesJson = new JSONObject();
-                        phonesJson.put("id", id);
-                        phonesJson.put("model", model);
-                        phonesJson.put("quantity", quantity);
-                        phonesJson.put("price", price);
-                        specificationsJson.put("phoneID", id);
-                        specificationsJson.put("storage", storage);
-                        specificationsJson.put("chipset", chipset);
-                        JSONObject json = new JSONObject();
-                        json.put("request", "insertPhone");
-                        json.put("specifications", specificationsJson);
-                        json.put("phones", phonesJson);
-                        out.println(json);
-
-//                        MobilePhone insertedPhone = mainInstance.insert(daoMobilePhone);
-//                        System.out.println("Inserted Phone: " + insertedPhone);
+                        Specifications specifications = new Specifications(storage, chipset);
+                        MobilePhone phoneToInsert = new MobilePhone(specifications, brand_id, model, quantity, price);
+                        JsonConverter jsonConverter = new JsonConverter();
+                        JSONObject phoneJson = jsonConverter.serializeMobilePhone(phoneToInsert);
+                        JSONObject specJson = jsonConverter.serializeSpecifications(phoneToInsert);
+                        JSONArray phoneSpecArray = new JSONArray();
+                        phoneSpecArray.put(phoneJson);
+                        phoneSpecArray.put(specJson);
+                        System.out.println("array to send" + phoneSpecArray);
+                        String jsonString = phoneSpecArray.toString();
+                        out.println("insertPhone." + jsonString);
+                        response = in.readLine();
+                        System.out.println(response);
+                        mobilePhone = new MobilePhone(new JSONObject(response));
+                        System.out.println(mobilePhone);
                         break;
                     case 5:
 //                        mainInstance.update(daoMobilePhone);
@@ -184,7 +188,7 @@ public class Main {
                         for (int i = 0; i < getByFilterJson.length(); i++) {
                             JSONObject jsonObject = getByFilterJson.getJSONObject(i);
                             System.out.println(jsonObject);
-                            MobilePhone mobilePhone = new MobilePhone(jsonObject);
+                            mobilePhone = new MobilePhone(jsonObject);
                             filteredMobilePhones.add(mobilePhone);
                         }
                         System.out.println(filteredMobilePhones);
