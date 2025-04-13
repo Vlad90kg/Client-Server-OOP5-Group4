@@ -99,8 +99,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     @Override
     public int update(int id, MobilePhone mobilePhone) throws DaoException {
         String query = "UPDATE mobile_phone SET brand_id = ?, model = ?, quantity = ?, price = ? WHERE id = ?";
-        try (
-                PreparedStatement statement = ds == null? getConnection().prepareStatement(query): ds.getConnection().prepareStatement(query);
+        try (PreparedStatement statement = ds == null? getConnection().prepareStatement(query): ds.getConnection().prepareStatement(query);
                 ){
 
             statement.setInt(1, mobilePhone.getBrandId());

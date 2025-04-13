@@ -55,7 +55,7 @@ public class ClientHandler implements Runnable {
                     case "3":
 //                        mainInstance.deletePhoneById(daoMobilePhone);
                         break;
-                    case "4":
+                    case "insertPhone":
 //                        MobilePhone insertedPhone = mainInstance.insert(daoMobilePhone);
 //                        System.out.println("Inserted Phone: " + insertedPhone);
                         break;
