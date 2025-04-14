@@ -51,7 +51,7 @@ public class ClientHandler implements Runnable {
                     } else if (inputLine.startsWith("insertPhone")) {
                         jsonString = inputLine.substring(inputLine.indexOf('.') + 1);
                         inputLine = "insertPhone";
-                    }  else if (inputLine.startsWith("updatePhone")) {
+                    } else if (inputLine.startsWith("getImage")) {
                         imageName = inputLine.substring(inputLine.indexOf('.') + 1);
                         inputLine = "getImage";
                     }
@@ -99,16 +99,19 @@ public class ClientHandler implements Runnable {
                                 out.println(jsonStringImage);
                             }
                             break;
-                            case "getImage":
-                                File dirImage = new File("images/" + imageName);
-                                fileInputStream = new FileInputStream(dirImage);
-                                dataOutputStream.writeLong(fileInputStream.available());
+                        case "getImage":
+                            File dirImage = new File("images/" + imageName);
+                            fileInputStream = new FileInputStream(dirImage);
+                            dataOutputStream.writeLong(fileInputStream.available());
 
-                                byte[] buffer = new byte[4096];
+                            byte[] buffer = new byte[4096];
 
-                                while (fileInputStream.read(buffer) != -1) {
-                                    dataOutputStream.write(buffer, 0, buffer.length);
-                                }
+                            while (fileInputStream.read(buffer) != -1) {
+                                dataOutputStream.write(buffer, 0, buffer.length);
+                                dataOutputStream.flush();
+                            }
+                            fileInputStream.close();
+                            break;
 
                         case "exit":
                             exit = true;

@@ -222,6 +222,24 @@ public class Main {
                                     input = scanner.nextLine();
                                     valid = InputValidation.validateString(input);
                                     if (valid) out.println("getImage." + input);
+                                    String imageName = "images/" + input;
+                                    DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                                    FileOutputStream fileOutputStream = new FileOutputStream(imageName);
+                                    long bytesRemaining = dataInputStream.readLong();
+                                    System.out.println("File size: " + bytesRemaining/1024 + " Kb");
+                                    byte[] buffer = new byte[4096];
+                                    int bytesRead = 0;
+
+                                    while (bytesRemaining > 0 && (bytesRead = dataInputStream.read(buffer, 0, (int)Math.min(buffer.length, bytesRemaining))) != -1) {
+                                        fileOutputStream.write(buffer, 0, bytesRead);
+                                        bytesRemaining -= bytesRead;
+                                        System.out.println("Bytes remaining: " + bytesRemaining + " bytes");
+
+                                    }
+                                    fileOutputStream.close();
+
+                                    System.out.println("File is Received");
+
 
                                     break;
                                 case 3:
