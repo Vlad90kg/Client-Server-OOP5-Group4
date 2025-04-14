@@ -1,6 +1,5 @@
 package group4.group4.client;
 
-import com.mysql.cj.xdevapi.JsonArray;
 import group4.group4.Exceptions.DaoException;
 
 import group4.group4.server.JsonConverter;
@@ -14,6 +13,8 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class Main {
     public static Scanner scanner = new Scanner(System.in);
@@ -226,11 +227,11 @@ public class Main {
                                     DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
                                     FileOutputStream fileOutputStream = new FileOutputStream(imageName);
                                     long bytesRemaining = dataInputStream.readLong();
-                                    System.out.println("File size: " + bytesRemaining/1024 + " Kb");
+                                    System.out.println("File size: " + bytesRemaining / 1024 + " Kb");
                                     byte[] buffer = new byte[4096];
                                     int bytesRead = 0;
 
-                                    while (bytesRemaining > 0 && (bytesRead = dataInputStream.read(buffer, 0, (int)Math.min(buffer.length, bytesRemaining))) != -1) {
+                                    while (bytesRemaining > 0 && (bytesRead = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, bytesRemaining))) != -1) {
                                         fileOutputStream.write(buffer, 0, bytesRead);
                                         bytesRemaining -= bytesRead;
                                         System.out.println("Bytes remaining: " + bytesRemaining + " bytes");
@@ -243,6 +244,11 @@ public class Main {
 
                                     break;
                                 case 3:
+                                    out.println("getAllImages");
+                                    File downloadZipFile = new File("zip");
+                                    File extractTo = new File("images");
+                                    receiveZip(socket, downloadZipFile);
+                                    unzipFile(downloadZipFile, extractTo);
                                     break;
                                 default:
                                     System.out.println("Invalid input. Please enter 1,2 or 3.");
@@ -250,7 +256,6 @@ public class Main {
                         } else {
                             System.out.println("Invalid input. Please enter a number.");
                         }
-
 
 
                         break;
@@ -264,13 +269,67 @@ public class Main {
                 }
             }
 
-        } catch (UnknownHostException e) {
+        } catch (
+                UnknownHostException e) {
             throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public void receiveZip(Socket socket, File downloadZipFile){
+
+        try (
+                InputStream is = socket.getInputStream();
+                BufferedInputStream bis = new BufferedInputStream(is);
+                FileOutputStream fos = new FileOutputStream(downloadZipFile);
+                BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+
+            while ((bytesRead = bis.read(buffer)) != -1) {
+                bos.write(buffer, 0, bytesRead);
+            }
+            bos.flush();
+            System.out.println("ZIP file downloaded to: " + downloadZipFile.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Error downloading ZIP file: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public void unzipFile(File downloadZipFile, File extractTo)  {
+        try(FileInputStream fileInputStream = new FileInputStream(downloadZipFile);
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+            ZipInputStream zipInputStream = new ZipInputStream(bufferedInputStream)) {
+
+            ZipEntry zipEntry;
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+
+                File outFile = new File(extractTo, zipEntry.getName());
+                System.out.println("Extracting file: " + outFile.getAbsolutePath());
+
+                try (FileOutputStream fos = new FileOutputStream(outFile);
+                BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = zipInputStream.read(buffer)) != -1) {
+                        bos.write(buffer, 0, bytesRead);
+                    }
+                }
+                zipInputStream.closeEntry();
+            }
+            System.out.println("File extracted to: " + extractTo.getAbsolutePath());
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     public void receiveFile() {
 

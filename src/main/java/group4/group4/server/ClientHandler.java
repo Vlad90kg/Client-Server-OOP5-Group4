@@ -14,6 +14,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class ClientHandler implements Runnable {
     private final Socket clientSocket;
@@ -113,6 +115,10 @@ public class ClientHandler implements Runnable {
                             fileInputStream.close();
                             break;
 
+                        case "getAllImages":
+                            sendFiles();
+                            break;
+
                         case "exit":
                             exit = true;
                             System.out.println("Exiting...");
@@ -156,6 +162,36 @@ public class ClientHandler implements Runnable {
         return phone;
     }
 
+    private void sendFiles(){
+        try(OutputStream os = clientSocket.getOutputStream();
+        BufferedOutputStream bos = new BufferedOutputStream(os);
+            ZipOutputStream zos = new ZipOutputStream(bos);) {
+            File[] files = new File("images/").listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile()) {
+                        System.out.println("Adding file: " + file.getName());
+                        try (FileInputStream fileInputStream = new FileInputStream(file);
+                        BufferedInputStream bis = new BufferedInputStream(fileInputStream);) {
+                            ZipEntry zipEntry = new ZipEntry(file.getName());
+                            zos.putNextEntry(zipEntry);
+                            byte[] buffer = new byte[4096];
+                            int bytesRead;
+                            while ((bytesRead = bis.read(buffer)) != -1) {
+                                zos.write(buffer, 0, bytesRead);
+                            }
+                            zos.closeEntry();
+                        }
+                    }
+                }
+            }
+
+            zos.close();
+            System.out.println("Zip complete.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     //    public void deletePhoneById(DaoMobilePhone daoMobilePhone) throws DaoException {
 //        // Feature 3
 //        System.out.println("Enter ID to delete: ");
