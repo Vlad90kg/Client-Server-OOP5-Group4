@@ -194,6 +194,9 @@ public class Main {
                         System.out.println(filteredMobilePhones);
                         break;
                     case 7:
+
+                        break;
+                    case 8:
                         exit = true;
                         out.println("exit");
                         System.out.println("Exiting...");
@@ -209,5 +212,7 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
+
+    
 
 }
