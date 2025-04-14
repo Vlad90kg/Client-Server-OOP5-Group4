@@ -234,23 +234,21 @@ public class Main {
                                     System.out.println("Input image name: ");
                                     input = scanner.nextLine();
                                     valid = InputValidation.validateString(input);
-                                    if (valid) out.println("getImage." + input);
+                                    if (valid) // Send the command "getImage.[imageName]" on your command channel
+                                        out.println("getImage." + input);
                                     String imageName = "images/" + input;
+                                    System.out.println(imageName);
+
                                     DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-                                    FileOutputStream fileOutputStream = new FileOutputStream(imageName);
-                                    long bytesRemaining = dataInputStream.readLong();
-                                    System.out.println("File size: " + bytesRemaining / 1024 + " Kb");
-                                    byte[] buffer = new byte[4096];
-                                    int bytesRead = 0;
+                                    long fileSize = dataInputStream.readLong();
+                                    System.out.println("File size: " + fileSize + " bytes");
 
-                                    while (bytesRemaining > 0 && (bytesRead = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, bytesRemaining))) != -1) {
-                                        fileOutputStream.write(buffer, 0, bytesRead);
-                                        bytesRemaining -= bytesRead;
-                                        System.out.println("Bytes remaining: " + bytesRemaining + " bytes");
+                                    byte[] fileData = new byte[(int) fileSize];
+                                    dataInputStream.readFully(fileData);
 
+                                    try (FileOutputStream fileOutputStream = new FileOutputStream(imageName)) {
+                                        fileOutputStream.write(fileData);
                                     }
-                                    fileOutputStream.close();
-
                                     System.out.println("File is Received");
 
 
@@ -299,7 +297,7 @@ public class Main {
         }
     }
 
-    public void receiveZip(Socket socket, File downloadZipFile){
+    public void receiveZip(Socket socket, File downloadZipFile) {
 
         try (
                 InputStream is = socket.getInputStream();
@@ -321,10 +319,10 @@ public class Main {
         }
     }
 
-    public void unzipFile(File downloadZipFile, File extractTo)  {
-        try(FileInputStream fileInputStream = new FileInputStream(downloadZipFile);
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
-            ZipInputStream zipInputStream = new ZipInputStream(bufferedInputStream)) {
+    public void unzipFile(File downloadZipFile, File extractTo) {
+        try (FileInputStream fileInputStream = new FileInputStream(downloadZipFile);
+             BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+             ZipInputStream zipInputStream = new ZipInputStream(bufferedInputStream)) {
 
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
@@ -333,7 +331,7 @@ public class Main {
                 System.out.println("Extracting file: " + outFile.getAbsolutePath());
 
                 try (FileOutputStream fos = new FileOutputStream(outFile);
-                BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+                     BufferedOutputStream bos = new BufferedOutputStream(fos)) {
                     byte[] buffer = new byte[4096];
                     int bytesRead;
                     while ((bytesRead = zipInputStream.read(buffer)) != -1) {

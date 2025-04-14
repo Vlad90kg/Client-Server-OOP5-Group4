@@ -108,17 +108,23 @@ public class ClientHandler implements Runnable {
                             }
                             break;
                         case "getImage":
-                            File dirImage = new File("images/" + imageName);
-                            fileInputStream = new FileInputStream(dirImage);
-                            dataOutputStream.writeLong(fileInputStream.available());
-
-                            byte[] buffer = new byte[4096];
-
-                            while (fileInputStream.read(buffer) != -1) {
-                                dataOutputStream.write(buffer, 0, buffer.length);
-                                dataOutputStream.flush();
+                            // When sending a file:
+                            File file = new File("images/" + imageName);
+                            try (FileInputStream fis = new FileInputStream(file);
+                                 BufferedInputStream bis = new BufferedInputStream(fis)) {
+                                DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
+                                long fileSize = file.length();
+                                System.out.println(fileSize);
+                                dos.writeLong(fileSize); // send length prefix
+                                byte[] buffer = new byte[4096];
+                                int bytesRead;
+                                while ((bytesRead = bis.read(buffer)) != -1) {
+                                    System.out.println(bytesRead);
+                                    dos.write(buffer, 0, bytesRead);
+                                }
+                                dos.flush();
                             }
-                            fileInputStream.close();
+
                             break;
 
                         case "getAllImages":
