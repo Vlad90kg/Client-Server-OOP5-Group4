@@ -60,7 +60,7 @@ public class ClientHandler implements Runnable {
                         imageName = inputLine.substring(inputLine.indexOf('.') + 1);
                         inputLine = "getImage";
                     }
-
+                    System.out.println(inputLine+"<<<<<<");
                     switch (inputLine) {
                         case "getAll":
                             String getAllString = jsonConverter.phonesListJson(getAllPhones(daoMobilePhone));
@@ -95,9 +95,11 @@ public class ClientHandler implements Runnable {
                             File[] files = dir.listFiles();
 
                             if (files != null) {
+                                System.out.println(files.length);
                                 StringBuilder stringBuilder = new StringBuilder();
 
                                 for (File file : files) {
+                                    System.out.println(file.getName());
                                     stringBuilder.append(file.getName()).append(",");
                                 }
 
@@ -166,22 +168,19 @@ public class ClientHandler implements Runnable {
         return phone;
     }
 
-    private void sendFiles(){
-        try(OutputStream os = clientSocket.getOutputStream();
-        BufferedOutputStream bos = new BufferedOutputStream(os);
-            ZipOutputStream zos = new ZipOutputStream(bos);) {
+    private void sendFiles() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
             File[] files = new File("images/").listFiles();
             if (files != null) {
                 for (File file : files) {
                     if (file.isFile()) {
                         System.out.println("Adding file: " + file.getName());
-                        try (FileInputStream fileInputStream = new FileInputStream(file);
-                        BufferedInputStream bis = new BufferedInputStream(fileInputStream);) {
-                            ZipEntry zipEntry = new ZipEntry(file.getName());
-                            zos.putNextEntry(zipEntry);
+                        try (FileInputStream fis = new FileInputStream(file)) {
+                            zos.putNextEntry(new ZipEntry(file.getName()));
                             byte[] buffer = new byte[4096];
                             int bytesRead;
-                            while ((bytesRead = bis.read(buffer)) != -1) {
+                            while ((bytesRead = fis.read(buffer)) != -1) {
                                 zos.write(buffer, 0, bytesRead);
                             }
                             zos.closeEntry();
@@ -189,85 +188,19 @@ public class ClientHandler implements Runnable {
                     }
                 }
             }
-
-            zos.close();
-            System.out.println("Zip complete.");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            zos.finish();
         }
+        byte[] zipBytes = baos.toByteArray();
+        DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
+
+        dos.writeLong(zipBytes.length);
+
+        dos.write(zipBytes);
+        dos.flush();
+        System.out.println("getAllImages: ZIP sent, size: " + zipBytes.length);
     }
-    //    public void deletePhoneById(DaoMobilePhone daoMobilePhone) throws DaoException {
-//        // Feature 3
-//        System.out.println("Enter ID to delete: ");
-//        boolean validId = false;
-//        int id = -1;
-//
-//        while (!validId) {
-//            try {
-//                id = Integer.parseInt(scanner.nextLine());
-//                if (id >= 0) {
-//                    validId = true;
-//                }
-//            } catch (NumberFormatException e) {
-//                System.out.println("Invalid input. Please enter a number.");
-//            }
-//            System.out.println("Enter valid ID to delete: ");
-//        }
-//        scanner.nextLine();
-//        int rowsAffected = daoMobilePhone.delete(id);
-//        if (rowsAffected > 0) {
-//            System.out.println("Phone with ID " + id + " deleted successfully!");
-//        }
-//        else {
-//            System.out.println("No phone found with ID " + id);
-//        }
-//    }
-//
 
 
-    //
-//    public void update(DaoMobilePhone daoMobilePhone) throws DaoException {
-//        // Feature 5
-//        String updatedModel = "";
-//        int idToUpdate = 0, updatedBrandId = 0, updatedQuantity = 0;
-//        double updatedPrice = 0;
-//
-//        boolean validInput = false;
-//        while (!validInput) {
-//            try {
-//                System.out.print("Enter ID of mobile phone you would like to change: ");
-//                idToUpdate = Integer.parseInt(scanner.nextLine());
-//                System.out.print("Enter new brand ID: ");
-//                updatedBrandId = Integer.parseInt(scanner.nextLine());
-//                System.out.print("Enter new model: ");
-//                updatedModel = scanner.nextLine();
-//                System.out.print("Enter new quantity: ");
-//                updatedQuantity = Integer.parseInt(scanner.nextLine());
-//                System.out.print("Enter new price: ");
-//                updatedPrice = Double.parseDouble(scanner.nextLine());
-//
-//                if (idToUpdate >= 0 || updatedBrandId > 0 || !updatedModel.isEmpty() || updatedQuantity >= 0 || updatedPrice > 0) {
-//                    validInput = true;
-//                }
-//            } catch (NumberFormatException e) {
-//                System.out.println("Invalid input. Please enter a number.");
-//            }
-//            if (!validInput) {
-//                System.out.println("Invalid input. Please try again.");
-//            }
-//        }
-//
-//        int rowsAffected = daoMobilePhone.update(idToUpdate, new MobilePhone(updatedBrandId, updatedModel, updatedQuantity, updatedPrice));
-//        if (rowsAffected > 0) {
-//            System.out.println("Phone with ID " + idToUpdate + " updated successfully!");
-//        }
-//        else {
-//            System.out.println("No phone found with ID " + idToUpdate);
-//        }
-//
-//    }
-//
-//
     public List<MobilePhone> getFilteredPhones(DaoMobilePhone daoMobilePhone, double treshold) throws DaoException {
         // Feature 6
         Comparator<MobilePhone> comparator = (p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice());

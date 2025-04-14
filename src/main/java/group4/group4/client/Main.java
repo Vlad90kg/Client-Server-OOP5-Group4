@@ -257,10 +257,19 @@ public class Main {
                                     break;
                                 case 3:
                                     out.println("getAllImages");
-                                    File downloadZipFile = new File("zip");
-                                    File extractTo = new File("images");
-                                    receiveZip(socket, downloadZipFile);
-                                    unzipFile(downloadZipFile, extractTo);
+                                    DataInputStream dis = new DataInputStream(socket.getInputStream());
+                                    long zipLength = dis.readLong();
+                                    System.out.println("ZIP file size: " + zipLength + " bytes");
+
+                                    byte[] zipBytes = new byte[(int) zipLength];
+                                    dis.readFully(zipBytes);
+
+                                    File zipFile = new File("downloadedImages.zip");
+                                    try (FileOutputStream fos = new FileOutputStream(zipFile)) {
+                                        fos.write(zipBytes);
+                                    }
+                                    System.out.println("ZIP file received: " + zipFile.getAbsolutePath());
+                                    unzipFile(zipFile, new File("images"));
                                     break;
                                 default:
                                     System.out.println("Invalid input. Please enter 1,2 or 3.");
