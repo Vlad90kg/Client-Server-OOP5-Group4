@@ -8,12 +8,10 @@ import group4.group4.server.dto.Specifications;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -32,12 +30,14 @@ public class ClientHandler implements Runnable {
             DaoMobilePhone daoMobilePhone = new DaoMobilePhoneImpl();
             System.out.println("Client connected");
             JsonConverter jsonConverter = new JsonConverter();
-            String inputLine, jsonString = "";
+            String inputLine, jsonString = "", imageName = "";
+            FileInputStream fileInputStream;
+            DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
 
             boolean exit = false;
             while (!exit) {
                 inputLine = in.readLine();
-                if (inputLine == null) {
+                if (inputLine == null || inputLine.isEmpty()) {
                     System.out.println("Client disconnected");
                 } else {
                     int intArgument = 0;
@@ -51,6 +51,9 @@ public class ClientHandler implements Runnable {
                     } else if (inputLine.startsWith("insertPhone")) {
                         jsonString = inputLine.substring(inputLine.indexOf('.') + 1);
                         inputLine = "insertPhone";
+                    }  else if (inputLine.startsWith("updatePhone")) {
+                        imageName = inputLine.substring(inputLine.indexOf('.') + 1);
+                        inputLine = "getImage";
                     }
 
                     switch (inputLine) {
@@ -81,6 +84,32 @@ public class ClientHandler implements Runnable {
                             String findByFilter = jsonConverter.phonesListJson(getFilteredPhones(daoMobilePhone, price));
                             out.println(findByFilter);
                             break;
+                        case "getFileNames":
+                            File dir = new File("images");
+                            File[] files = dir.listFiles();
+
+                            if (files != null) {
+                                StringBuilder stringBuilder = new StringBuilder();
+
+                                for (File file : files) {
+                                    stringBuilder.append(file.getName()).append(",");
+                                }
+
+                                String jsonStringImage = stringBuilder.toString();
+                                out.println(jsonStringImage);
+                            }
+                            break;
+                            case "getImage":
+                                File dirImage = new File("images/" + imageName);
+                                fileInputStream = new FileInputStream(dirImage);
+                                dataOutputStream.writeLong(fileInputStream.available());
+
+                                byte[] buffer = new byte[4096];
+
+                                while (fileInputStream.read(buffer) != -1) {
+                                    dataOutputStream.write(buffer, 0, buffer.length);
+                                }
+
                         case "exit":
                             exit = true;
                             System.out.println("Exiting...");

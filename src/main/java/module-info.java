@@ -10,6 +10,7 @@ module group.group {
     requires eu.hansolo.tilesfx;
     requires java.sql;
     requires org.json;
+    requires mysql.connector.java;
 
     opens group4.group4 to javafx.fxml;
     exports group4.group4.client.GUI;

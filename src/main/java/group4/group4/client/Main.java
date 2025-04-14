@@ -1,5 +1,6 @@
 package group4.group4.client;
 
+import com.mysql.cj.xdevapi.JsonArray;
 import group4.group4.Exceptions.DaoException;
 
 import group4.group4.server.JsonConverter;
@@ -43,8 +44,9 @@ public class Main {
                 System.out.println("3. Delete Phone by ID");
                 System.out.println("4. Insert Phone");
                 System.out.println("5. Update Phone");
-                System.out.println("6. Filter Phones by ...");
-                System.out.println("7. Exit");
+                System.out.println("6. Filter Phones by price:");
+                System.out.println("7. Download image from server");
+                System.out.println("8. Exit");
                 System.out.print("Enter your choice: ");
 
                 int choice = 0;
@@ -194,6 +196,44 @@ public class Main {
                         System.out.println(filteredMobilePhones);
                         break;
                     case 7:
+//                        src/main/java/group4/group4/server/images/img.png   | Bin 0 -> 104674 bytes
+//                        src/main/java/group4/group4/server/images/img_1.png | Bin 0 -> 120148 bytes
+//                        src/main/java/group4/group4/server/images/img_2.png | Bin 0 -> 112529 bytes
+//                        src/main/java/group4/group4/server/images/img_3.png | Bin 0 -> 136313 bytes
+                        System.out.println("1. Display available images");
+                        System.out.println("2. Download image from server");
+                        System.out.println("3. Dowload all images");
+
+                        String optionInput = scanner.nextLine();
+                        valid = InputValidation.validateInt(optionInput);
+                        if (valid) {
+                            int option = Integer.parseInt(optionInput);
+                            switch (option) {
+                                case 1:
+                                    String request = "getFileNames";
+                                    out.println(request);
+                                    String fileNames = in.readLine();
+                                    for (String fileName : fileNames.split(",")) {
+                                        System.out.println(fileName);
+                                    }
+                                    break;
+                                case 2:
+                                    System.out.println("Input image name: ");
+                                    input = scanner.nextLine();
+                                    valid = InputValidation.validateString(input);
+                                    if (valid) out.println("getImage." + input);
+
+                                    break;
+                                case 3:
+                                    break;
+                                default:
+                                    System.out.println("Invalid input. Please enter 1,2 or 3.");
+                            }
+                        } else {
+                            System.out.println("Invalid input. Please enter a number.");
+                        }
+
+
 
                         break;
                     case 8:
@@ -213,6 +253,8 @@ public class Main {
         }
     }
 
-    
 
+    public void receiveFile() {
+
+    }
 }
