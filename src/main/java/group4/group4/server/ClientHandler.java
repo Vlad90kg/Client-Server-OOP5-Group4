@@ -47,6 +47,9 @@ public class ClientHandler implements Runnable {
                     if (inputLine.startsWith("getById")) {
                         intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
                         inputLine = "getById";
+                    } else if (inputLine.startsWith("deleteById")) {
+                        intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
+                        inputLine = "deleteById";
                     } else if (inputLine.startsWith("getByFilter")) {
                         price = Double.parseDouble(inputLine.substring(inputLine.indexOf('.') + 1));
                         inputLine = "getByFilter";
@@ -67,8 +70,9 @@ public class ClientHandler implements Runnable {
                             String getByIdString = jsonConverter.phoneToJson(getPhoneById(daoMobilePhone, intArgument));
                             out.println(getByIdString);
                             break;
-                        case "3":
-//                        mainInstance.deletePhoneById(daoMobilePhone);
+                        case "deleteById":
+                            int deletionResponse = daoMobilePhone.delete(intArgument);
+                            out.println(deletionResponse);
                             break;
                         case "insertPhone":
                             JSONArray jsonArray = new JSONArray(jsonString);
