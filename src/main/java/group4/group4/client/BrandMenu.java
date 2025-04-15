@@ -92,6 +92,19 @@ public class BrandMenu {
                         System.out.println(res + "\n");
                         break;
                     case 3:
+                        int idToDelete = -1;
+                        valid = false;
+
+                        while (!valid) {
+                            System.out.print("Enter ID of brand to delete: ");
+                            input = scanner.nextLine();
+                            valid = InputValidation.validateInt(input);
+                            if (!valid) continue;
+                            idToDelete = Integer.parseInt(input);
+                        }
+
+                        out.println("deleteBrandById." + idToDelete);
+                        System.out.println((Integer.parseInt(in.readLine()) == 1) ? "Successfully deleted brand with specified ID!\n" : "No brand with specified ID so nothing has been deleted\n");
                         break;
                     case 4:
                         System.out.println("Enter: ");
