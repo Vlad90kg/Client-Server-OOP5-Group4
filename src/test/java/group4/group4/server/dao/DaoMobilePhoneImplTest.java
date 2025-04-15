@@ -165,7 +165,7 @@ class DaoMobilePhoneImplTest {
         when(ps.executeUpdate()).thenReturn(1);
         when(ps.executeUpdate()).thenThrow(new SQLException("Simulated SQL error"));
 
-        assertThrows(RuntimeException.class, () -> dmpi.delete(2));
+        assertThrows(DaoException.class, () -> dmpi.delete(2));
     }
 
     @Test
@@ -302,7 +302,7 @@ class DaoMobilePhoneImplTest {
         verify(ps).setString(2, testPhone.getModel());
         verify(ps).setInt(3, testPhone.getQuantity());
         verify(ps).setDouble(4, testPhone.getPrice());
-        verify(ps).setDouble(5, 1.0d);
+        verify(ps).setInt(5, 1);
     }
 
     @Test

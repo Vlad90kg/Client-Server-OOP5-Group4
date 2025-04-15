@@ -49,6 +49,11 @@ class JsonConverterTest {
         public List<MobilePhone> findByFilter(Comparator<MobilePhone> comparator, double treshold) throws DaoException {
             return List.of();
         }
+
+        @Override
+        public boolean existsById(int id) throws DaoException {
+            return false;
+        }
     };
 
 
@@ -97,7 +102,7 @@ class JsonConverterTest {
 
         assertNull(nullString);
         assertEquals("[]", emptyString);
-        assertEquals("[{\"quantity\":55,\"price\":256,\"brandId\":1,\"model\":\"lool\",\"id\":1},{\"quantity\":55,\"price\":512,\"brandId\":1,\"model\":\"lool\",\"id\":2}]", list);
+        assertEquals("[{\"quantity\":55,\"price\":256,\"model\":\"lool\",\"id\":1,\"brand_id\":1},{\"quantity\":55,\"price\":512,\"model\":\"lool\",\"id\":2,\"brand_id\":1}]", list);
     }
 
 
@@ -107,8 +112,8 @@ class JsonConverterTest {
         String emptyString = jsonConverter.phoneToJson(new MobilePhone());
         String phoneString = jsonConverter.phoneToJson(dummyList.get(0));
 
-        assertNull(nullString);
-        assertEquals("{\"quantity\":0,\"price\":0,\"brandId\":0,\"id\":0}", emptyString);
-        assertEquals("{\"quantity\":55,\"price\":256,\"brandId\":1,\"model\":\"lool\",\"id\":1}", phoneString);
+        assertEquals("Phone ID has not been found", nullString);
+        assertEquals("{\"quantity\":0,\"price\":0,\"id\":0,\"brand_id\":0}", emptyString);
+        assertEquals("{\"quantity\":55,\"price\":256,\"model\":\"lool\",\"id\":1,\"brand_id\":1}", phoneString);
     }
 }
