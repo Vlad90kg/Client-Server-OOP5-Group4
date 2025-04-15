@@ -47,7 +47,7 @@ public class DaoBrandImpl extends MySqlDao implements DaoBrand {
     @Override
     public Brand getById(int Id) throws DaoException {
         Brand brand = null;
-        String query = "SELECT * FROM mobile_phone WHERE ID = ?";
+        String query = "SELECT * FROM brand WHERE ID = ?";
 
         try (
                 PreparedStatement preparedStatement = ds == null ? getConnection().prepareStatement(query) : ds.getConnection().prepareStatement(query);) {

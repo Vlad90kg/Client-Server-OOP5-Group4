@@ -2,12 +2,7 @@ package group4.group4.client;
 
 import group4.group4.Exceptions.DaoException;
 
-import group4.group4.server.JsonConverter;
-import group4.group4.server.dto.MobilePhone;
-import group4.group4.server.dto.Specifications;
-import group4.group4.util.InputValidation;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
 
 import java.io.*;
 import java.net.Socket;
@@ -35,6 +30,7 @@ public class Main {
 
             MobilePhoneMenu mobilePhoneMenu = new MobilePhoneMenu(scanner, socket, out, in);
             BrandMenu brandMenu = new BrandMenu(scanner, socket, out, in);
+
             while (!exit) {
                 System.out.println("=== Mobile Phone Management System ===");
                 System.out.println("1. Phones menu");
@@ -64,7 +60,6 @@ public class Main {
                         System.out.println("Invalid option");
                         break;
                 }
-                mobilePhoneMenu.display();
             }
 
         } catch (UnknownHostException e) {

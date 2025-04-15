@@ -43,10 +43,9 @@ public class MobilePhoneMenu {
                 System.out.println("2. Search Phone by ID");
                 System.out.println("3. Delete Phone by ID");
                 System.out.println("4. Insert Phone");
-                System.out.println("5. Update Phone");
-                System.out.println("6. Filter Phones by price:");
-                System.out.println("7. Download image from server");
-                System.out.println("8. Back to main menu");
+                System.out.println("5. Filter Phones by price:");
+                System.out.println("6. Download image from server");
+                System.out.println("7. Back to main menu");
                 System.out.print("Enter your choice: ");
 
                 int choice = 0;
@@ -59,7 +58,7 @@ public class MobilePhoneMenu {
                 System.out.println();
                 switch (choice) {
                     case 1:
-                        String getAllString = "getAll";
+                        String getAllString = "getAllPhone";
                         out.println(getAllString);
                         response = in.readLine();
                         JSONArray jsonArray = new JSONArray(response);
@@ -89,7 +88,7 @@ public class MobilePhoneMenu {
                             }
                         }
 
-                        String req = "getById." + idToFind;
+                        String req = "getByPhoneId." + idToFind;
                         out.println(req);
                         String res = in.readLine();
                         System.out.println(res + "\n");
@@ -106,19 +105,12 @@ public class MobilePhoneMenu {
                             idToDelete = Integer.parseInt(input);
                         }
 
-                        out.println("deleteById." + idToDelete);
+                        out.println("deleteByPhoneId." + idToDelete);
                         System.out.println((Integer.parseInt(in.readLine()) == 1) ? "Successfully deleted phone with specified ID!\n" : "No phone with specified ID so nothing has been deleted\n");
                         break;
-                    case 4:
 
+                    case 4:
                         System.out.println("Enter: ");
-                        while (!valid) {
-                            System.out.print("ID: ");
-                            input = scanner.nextLine();
-                            valid = InputValidation.validateInt(input);
-                            if (!valid) continue;
-                            id = Integer.parseInt(input);
-                        }
                         valid = false;
                         while (!valid) {
                             System.out.print("Brand ID: ");
@@ -147,7 +139,6 @@ public class MobilePhoneMenu {
                             input = scanner.nextLine();
                             valid = InputValidation.validateDouble(input);
                             if (valid) price = Double.parseDouble(input);
-
                         }
                         valid = false;
                         while (!valid) {
@@ -158,6 +149,7 @@ public class MobilePhoneMenu {
                             if (valid) storage = input;
 
                         }
+
                         valid = false;
 
                         while (!valid) {
@@ -169,12 +161,15 @@ public class MobilePhoneMenu {
 
                         Specifications specifications = new Specifications(storage, chipset);
                         MobilePhone phoneToInsert = new MobilePhone(specifications, brand_id, model, quantity, price);
+
                         JsonConverter jsonConverter = new JsonConverter();
                         JSONObject phoneJson = jsonConverter.serializeMobilePhone(phoneToInsert);
                         JSONObject specJson = jsonConverter.serializeSpecifications(phoneToInsert);
+
                         JSONArray phoneSpecArray = new JSONArray();
                         phoneSpecArray.put(phoneJson);
                         phoneSpecArray.put(specJson);
+
                         System.out.println("array to send" + phoneSpecArray);
                         String jsonString = phoneSpecArray.toString();
                         out.println("insertPhone." + jsonString);
@@ -183,10 +178,8 @@ public class MobilePhoneMenu {
                         mobilePhone = new MobilePhone(new JSONObject(response));
                         System.out.println(mobilePhone);
                         break;
+
                     case 5:
-//                        mainInstance.update(daoMobilePhone);
-                        break;
-                    case 6:
                         System.out.println("Please enter the threshold price: ");
                         try {
                             price = Double.parseDouble(scanner.nextLine());
@@ -195,10 +188,12 @@ public class MobilePhoneMenu {
                             continue;
                         }
                         List<MobilePhone> filteredMobilePhones = new ArrayList<>();
-                        String findByFilter = "getByFilter." + price;
+
+                        String findByFilter = "getPhoneByFilter." + price;
                         out.println(findByFilter);
                         String filterResult = in.readLine();
                         JSONArray getByFilterJson = new JSONArray(filterResult);
+
                         for (int i = 0; i < getByFilterJson.length(); i++) {
                             JSONObject jsonObject = getByFilterJson.getJSONObject(i);
                             System.out.println(jsonObject);
@@ -207,11 +202,7 @@ public class MobilePhoneMenu {
                         }
                         System.out.println(filteredMobilePhones);
                         break;
-                    case 7:
-//                        src/main/java/group4/group4/server/images/img.png   | Bin 0 -> 104674 bytes
-//                        src/main/java/group4/group4/server/images/img_1.png | Bin 0 -> 120148 bytes
-//                        src/main/java/group4/group4/server/images/img_2.png | Bin 0 -> 112529 bytes
-//                        src/main/java/group4/group4/server/images/img_3.png | Bin 0 -> 136313 bytes
+                    case 6:
                         System.out.println("1. Display available images");
                         System.out.println("2. Download image from server");
                         System.out.println("3. Dowload all images");
@@ -222,7 +213,7 @@ public class MobilePhoneMenu {
                             int option = Integer.parseInt(optionInput);
                             switch (option) {
                                 case 1:
-                                    String request = "getFileNames";
+                                    String request = "getPhoneFileNames";
                                     out.println(request);
                                     String fileNames = in.readLine();
                                     for (String fileName : fileNames.split(",")) {
@@ -234,7 +225,7 @@ public class MobilePhoneMenu {
                                     input = scanner.nextLine();
                                     valid = InputValidation.validateString(input);
                                     if (valid) // Send the command "getImage.[imageName]" on your command channel
-                                        out.println("getImage." + input);
+                                        out.println("getPhoneImage." + input);
                                     String imageName = "images/" + input;
                                     System.out.println(imageName);
 
@@ -253,7 +244,7 @@ public class MobilePhoneMenu {
 
                                     break;
                                 case 3:
-                                    out.println("getAllImages");
+                                    out.println("getAllPhoneImages");
                                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                                     long zipLength = dis.readLong();
                                     System.out.println("ZIP file size: " + zipLength + " bytes");
@@ -276,14 +267,14 @@ public class MobilePhoneMenu {
                         } else {
                             System.out.println("Invalid input. Please enter a number.");
                         }
-
-
                         break;
-                    case 8:
+
+                    case 7:
                         exit = true;
-                        out.println("exit");
+                        out.println("exitPhone");
                         System.out.println("Exiting...");
                         break;
+
                     default:
                         System.out.println("Invalid choice. Please try again.");
                 }
@@ -292,6 +283,8 @@ public class MobilePhoneMenu {
             System.out.println("Connection issues" + ioException.getMessage());
         }
     }
+
+
 
     public void unzipFile(File downloadZipFile, File extractTo) {
         try (FileInputStream fileInputStream = new FileInputStream(downloadZipFile);

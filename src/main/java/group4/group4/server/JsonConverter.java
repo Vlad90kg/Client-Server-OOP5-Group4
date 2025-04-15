@@ -1,6 +1,7 @@
 package group4.group4.server;
 
 
+import group4.group4.server.dto.Brand;
 import group4.group4.server.dto.MobilePhone;
 import group4.group4.server.dto.Specifications;
 import org.json.JSONArray;
@@ -56,10 +57,48 @@ public class JsonConverter {
         }
         JSONObject jsonObject = new JSONObject();
         Specifications spec = mobilePhone.getSpecifications();
-        jsonObject.put("ph  one_id", mobilePhone.getId());
+        jsonObject.put("phone_id", mobilePhone.getId());
         jsonObject.put("storage", spec.getStorage());
         jsonObject.put("chipset", spec.getChipset());
 
+        return jsonObject;
+    }
+
+
+    public String brandsListJson(List<Brand> brandsList){
+        if(brandsList == null){
+            System.out.println("Brands list is null");
+            return null;
+        }
+        JSONArray jsonArray = new JSONArray();
+        for (Brand brand : brandsList) {
+            JSONObject jsonObject = serializeBrand(brand);
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray.toString();
+    }
+
+    // Feature 8
+    public String brandToJson(Brand brand) {
+        if (brand == null) {
+            return "Phone ID has not been found";
+        }
+        else {
+            JSONObject jsonObject = serializeBrand(brand);
+
+            return jsonObject.toString();
+        }
+    }
+
+    public JSONObject serializeBrand(Brand brand) {
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("id", brand.getId());
+        jsonObject.put("name", brand.getName());
+        jsonObject.put("description", brand.getDescription());
+
+        System.out.println("brand in converter");
+        System.out.println(jsonObject);
         return jsonObject;
     }
 

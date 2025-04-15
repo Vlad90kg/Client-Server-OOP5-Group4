@@ -1,17 +1,19 @@
 package group4.group4.server;
 
 import group4.group4.Exceptions.DaoException;
+import group4.group4.server.dao.DaoBrand;
+import group4.group4.server.dao.DaoBrandImpl;
 import group4.group4.server.dao.DaoMobilePhone;
 import group4.group4.server.dao.DaoMobilePhoneImpl;
+import group4.group4.server.dto.Brand;
 import group4.group4.server.dto.MobilePhone;
 import group4.group4.server.dto.Specifications;
 import org.json.JSONArray;
-import org.json.JSONObject;
+
 
 import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -23,6 +25,7 @@ public class ClientHandler implements Runnable {
     public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
+
 
     @Override
     public void run() {
@@ -41,115 +44,190 @@ public class ClientHandler implements Runnable {
                 inputLine = in.readLine();
                 if (inputLine == null || inputLine.isEmpty()) {
                     System.out.println("Client disconnected");
+                    exit = true;
                 } else {
-                    int intArgument = 0;
-                    double price = 0;
-                    if (inputLine.startsWith("getById")) {
-                        intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
-                        inputLine = "getById";
-                    } else if (inputLine.startsWith("deleteById")) {
-                        intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
-                        inputLine = "deleteById";
-                    } else if (inputLine.startsWith("getByFilter")) {
-                        price = Double.parseDouble(inputLine.substring(inputLine.indexOf('.') + 1));
-                        inputLine = "getByFilter";
-                    } else if (inputLine.startsWith("insertPhone")) {
-                        jsonString = inputLine.substring(inputLine.indexOf('.') + 1);
-                        inputLine = "insertPhone";
-                    } else if (inputLine.startsWith("getImage")) {
-                        imageName = inputLine.substring(inputLine.indexOf('.') + 1);
-                        inputLine = "getImage";
-                    }
-                    System.out.println(inputLine+"<<<<<<");
-                    switch (inputLine) {
-                        case "getAll":
-                            String getAllString = jsonConverter.phonesListJson(getAllPhones(daoMobilePhone));
-                            out.println(getAllString);
-                            break;
-                        case "getById":
-                            String getByIdString = jsonConverter.phoneToJson(getPhoneById(daoMobilePhone, intArgument));
-                            out.println(getByIdString);
-                            break;
-                        case "deleteById":
-                            int deletionResponse = daoMobilePhone.delete(intArgument);
-                            out.println(deletionResponse);
-                            break;
-                        case "insertPhone":
-                            JSONArray jsonArray = new JSONArray(jsonString);
 
-                            MobilePhone toInsert = new MobilePhone(jsonArray.getJSONObject(0));
-                            Specifications specifications = new Specifications(jsonArray.getJSONObject(1));
-                            toInsert.setSpecifications(specifications);
-                            String insertPhoneString = jsonConverter.phoneToJson(daoMobilePhone.insert(toInsert));
-                            out.println(insertPhoneString);
-                            break;
-                        case "5":
-//                        mainInstance.update(daoMobilePhone);
-                            break;
-                        case "getByFilter":
-                            String findByFilter = jsonConverter.phonesListJson(getFilteredPhones(daoMobilePhone, price));
-                            out.println(findByFilter);
-                            break;
-                        case "getFileNames":
-                            File dir = new File("images");
-                            File[] files = dir.listFiles();
+                    if (!inputLine.toLowerCase().contains("phone")) {
+                        System.out.println("lol");
 
-                            if (files != null) {
-                                System.out.println(files.length);
-                                StringBuilder stringBuilder = new StringBuilder();
-
-                                for (File file : files) {
-                                    System.out.println(file.getName());
-                                    stringBuilder.append(file.getName()).append(",");
-                                }
-
-                                String jsonStringImage = stringBuilder.toString();
-                                out.println(jsonStringImage);
-                            }
-                            break;
-                        case "getImage":
-                            // When sending a file:
-                            File file = new File("images/" + imageName);
-                            try (FileInputStream fis = new FileInputStream(file);
-                                 BufferedInputStream bis = new BufferedInputStream(fis)) {
-                                DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
-                                long fileSize = file.length();
-                                System.out.println(fileSize);
-                                dos.writeLong(fileSize); // send length prefix
-                                byte[] buffer = new byte[4096];
-                                int bytesRead;
-                                while ((bytesRead = bis.read(buffer)) != -1) {
-                                    System.out.println(bytesRead);
-                                    dos.write(buffer, 0, bytesRead);
-                                }
-                                dos.flush();
-                            }
-
-                            break;
-
-                        case "getAllImages":
-                            sendFiles();
-                            break;
-
-                        case "exit":
-                            exit = true;
-                            System.out.println("Exiting...");
-                            break;
-                        default:
-                            System.out.println("Invalid choice. Please try again.");
+                        exit = brandHandler(inputLine, jsonConverter,jsonString, out,in);
+                    } else {
+                        exit = phoneHandler(inputLine, jsonConverter,jsonString, out,in);
                     }
                 }
-
             }
-
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (DaoException e) {
             throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
+    }
+
+    private boolean phoneHandler(String inputLine, JsonConverter jsonConverter, String jsonString, PrintWriter out, BufferedReader in) throws DaoException {
+            try{
+                DaoMobilePhoneImpl daoMobilePhone = new DaoMobilePhoneImpl();
+                String imageName = "";
+
+                int intArgument = 0;
+                double price = 0;
+                if (inputLine.startsWith("getByPhoneId")) {
+                    intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
+                    inputLine = "getByPhoneId";
+                } else if (inputLine.startsWith("deleteByPhoneId")) {
+                    intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
+                    inputLine = "deleteByPhoneId";
+                } else if (inputLine.startsWith("getPhoneByFilter")) {
+                    price = Double.parseDouble(inputLine.substring(inputLine.indexOf('.') + 1));
+                    inputLine = "getPhoneByFilter";
+                } else if (inputLine.startsWith("insertPhone")) {
+                    jsonString = inputLine.substring(inputLine.indexOf('.') + 1);
+                    inputLine = "insertPhone";
+                } else if (inputLine.startsWith("getPhoneImage")) {
+                    imageName = inputLine.substring(inputLine.indexOf('.') + 1);
+                    inputLine = "getPhoneImage";
+                }
+                System.out.println(inputLine+"<<<<<<");
+                switch (inputLine) {
+                    case "getAllPhone":
+                        String getAllString = jsonConverter.phonesListJson(getAllPhones(daoMobilePhone));
+                        out.println(getAllString);
+                        break;
+                    case "getByPhoneId":
+                        String getByIdString = jsonConverter.phoneToJson(getPhoneById(daoMobilePhone, intArgument));
+                        out.println(getByIdString);
+                        break;
+                    case "deleteByPhoneId":
+                        int deletionResponse = daoMobilePhone.delete(intArgument);
+                        out.println(deletionResponse);
+                        break;
+                    case "insertPhone":
+                        JSONArray jsonArray = new JSONArray(jsonString);
+
+                        MobilePhone toInsert = new MobilePhone(jsonArray.getJSONObject(0));
+                        Specifications specifications = new Specifications(jsonArray.getJSONObject(1));
+                        toInsert.setSpecifications(specifications);
+                        String insertPhoneString = jsonConverter.phoneToJson(daoMobilePhone.insert(toInsert));
+                        out.println(insertPhoneString);
+                        break;
+                    case "getPhoneByFilter":
+                        String findByFilter = jsonConverter.phonesListJson(getFilteredPhones(daoMobilePhone, price));
+                        out.println(findByFilter);
+                        break;
+                    case "getPhoneFileNames":
+                        File dir = new File("images");
+                        File[] files = dir.listFiles();
+
+                        if (files != null) {
+                            System.out.println(files.length);
+                            StringBuilder stringBuilder = new StringBuilder();
+
+                            for (File file : files) {
+                                System.out.println(file.getName());
+                                stringBuilder.append(file.getName()).append(",");
+                            }
+
+                            String jsonStringImage = stringBuilder.toString();
+                            out.println(jsonStringImage);
+                        }
+                        break;
+                    case "getPhoneImage":
+                        File file = new File("images/" + imageName);
+                        try (FileInputStream fis = new FileInputStream(file);
+                             BufferedInputStream bis = new BufferedInputStream(fis)) {
+                            DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
+                            long fileSize = file.length();
+                            System.out.println(fileSize);
+                            dos.writeLong(fileSize);
+                            byte[] buffer = new byte[4096];
+                            int bytesRead;
+                            while ((bytesRead = bis.read(buffer)) != -1) {
+                                System.out.println(bytesRead);
+                                dos.write(buffer, 0, bytesRead);
+                            }
+                            dos.flush();
+                        }
+
+                        break;
+
+                    case "getAllPhoneImages":
+                        sendFiles();
+                        break;
+
+                    case "exitPhone":
+                        System.out.println("Exiting...");
+                        return true;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+
+                }
+
+            } catch (FileNotFoundException e) {
+                System.out.println("Exception " + e.getMessage());
+            } catch (SQLException e) {
+                System.out.println("Database issues " + e.getMessage());
+            } catch (IOException e) {
+                System.out.println("Connection issues " + e.getMessage());
+            }
+        return false;
+    }
+
+
+    private boolean brandHandler(String inputLine, JsonConverter jsonConverter, String jsonString, PrintWriter out, BufferedReader in) throws DaoException {
+        try{
+            DaoBrandImpl daoBrand = new DaoBrandImpl();
+
+            int intArgument = 0;
+            if (inputLine.startsWith("getBrandById")) {
+                intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
+                inputLine = "getBrandById";
+            } else if (inputLine.startsWith("deleteBrandById")) {
+                intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
+                inputLine = "deleteBrandById";
+            } else if (inputLine.startsWith("getBrandByFilter")) {
+//                price = Double.parseDouble(inputLine.substring(inputLine.indexOf('.') + 1));
+                inputLine = "getBrandByFilter";
+            } else if (inputLine.startsWith("insertBrand")) {
+                jsonString = inputLine.substring(inputLine.indexOf('.') + 1);
+                inputLine = "insertBrand";
+            }
+            System.out.println(inputLine+"<<<<<<");
+            switch (inputLine) {
+                case "getAllBrand":
+                    String getAllString = jsonConverter.brandsListJson(getAllBrands(daoBrand));
+                    out.println(getAllString);
+                    break;
+                case "getBrandById":
+                    String getByIdString = jsonConverter.brandToJson(getBrandById(daoBrand, intArgument));
+                    out.println(getByIdString);
+                    break;
+                case "deleteBrandById":
+                    int deletionResponse = daoBrand.delete(intArgument);
+                    out.println(deletionResponse);
+                    break;
+                case "insertBrand":
+                    JSONArray jsonArray = new JSONArray(jsonString);
+
+                    Brand toInsert = new Brand(jsonArray.getJSONObject(0));
+                    String insertPhoneString = jsonConverter.brandToJson(daoBrand.insert(toInsert));
+                    out.println(insertPhoneString);
+                    break;
+                case "getBrandByFilter":
+//                    String findByFilter = jsonConverter.phonesListJson(getFilteredPhones(daoBrand, price));
+//                    out.println(findByFilter);
+                    break;
+
+                case "exitBrand":
+                    System.out.println("Exiting...");
+                    return true;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Database issues " + e.getMessage());
+        }
+        return false;
     }
 
     public List<MobilePhone> getAllPhones(DaoMobilePhone daoMobilePhone) throws DaoException {
@@ -212,5 +290,28 @@ public class ClientHandler implements Runnable {
         Comparator<MobilePhone> comparator = (p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice());
 
         return daoMobilePhone.findByFilter(comparator, treshold);
+    }
+
+
+    public List<Brand> getAllBrands(DaoBrand daoBrand) throws DaoException {
+        // Feature 1
+        List<Brand> list = daoBrand.getAll();
+        for (Brand brand : list) {
+            System.out.println(brand);
+        }
+        return list;
+    }
+
+    public Brand getBrandById(DaoBrand daoBrand, int idToSearch) throws DaoException {
+        // Feature 2
+        Brand brand = daoBrand.getById(idToSearch);
+
+        if (brand != null) {
+            System.out.println("Id found:");
+            System.out.println(brand);
+        } else {
+            System.out.println("No Phone found with ID: " + idToSearch);
+        }
+        return brand;
     }
 }

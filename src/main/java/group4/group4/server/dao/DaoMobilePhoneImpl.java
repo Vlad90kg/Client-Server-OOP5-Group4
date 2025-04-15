@@ -22,55 +22,96 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     public DaoMobilePhoneImpl() {
     }
 
-    // Feature 1
     @Override
     public List<MobilePhone> getAll() throws DaoException {
-
-        String sql = "select * from mobile_phone";
+        String sql = "SELECT m.id, m.brand_id, m.model, m.quantity, m.price, " +
+                "s.storage, s.chipset " +
+                "FROM mobile_phone m " +
+                "LEFT JOIN phone_specifications s ON m.id = s.phone_id";
         List<MobilePhone> mobilePhones = new ArrayList<>();
-        try(
-            PreparedStatement preparedStatement = ds == null? getConnection().prepareStatement(sql): ds.getConnection().prepareStatement(sql);
-            ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    int id = resultSet.getInt("id");
-                    int brand_id = resultSet.getInt("brand_id");
-                    String model = resultSet.getString("model");
-                    double price = resultSet.getDouble("price");
-                    int quantity = resultSet.getInt("quantity");
-                    MobilePhone phone = new MobilePhone(id,brand_id,model,quantity,price);
-                    mobilePhones.add(phone);
+
+        try (Connection connection = (ds != null ? ds.getConnection() : getConnection());
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet rs = preparedStatement.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                int brand_id = rs.getInt("brand_id");
+                String model = rs.getString("model");
+                int quantity = rs.getInt("quantity");
+                double price = rs.getDouble("price");
+
+                MobilePhone phone = new MobilePhone(id, brand_id, model, quantity, price);
+
+
+                String storage = rs.getString("storage");
+                String chipset = rs.getString("chipset");
+
+
+                if (storage != null || chipset != null) {
+                    Specifications spec = new Specifications();
+                    spec.setPhone_id(id);
+                    spec.setStorage(storage);
+                    spec.setChipset(chipset);
+                    phone.setSpecifications(spec);
                 }
-        } catch (SQLException e){
-            throw new DaoException("Error fetching mobile phones: " + e.getMessage());
+
+                mobilePhones.add(phone);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Error fetching mobile phones: " + e.getMessage(), e);
         }
+
         return mobilePhones;
     }
 
     // Feature 2
     @Override
-    public MobilePhone getById(int Id) throws DaoException {
-        MobilePhone phone2 = null;
-        String query = "SELECT * FROM mobile_phone WHERE ID = ?";
+    public MobilePhone getById(int id) throws DaoException {
+        // Use a LEFT JOIN to retrieve the phone and its specifications for a given id.
+        String sql = "SELECT m.id, m.brand_id, m.model, m.quantity, m.price, " +
+                "s.storage, s.chipset " +
+                "FROM mobile_phone m " +
+                "LEFT JOIN phone_specifications s ON m.id = s.phone_id " +
+                "WHERE m.id = ?";
+        MobilePhone phone = null;
 
-        try(
-            PreparedStatement preparedStatement = ds == null? getConnection().prepareStatement(query): ds.getConnection().prepareStatement(query);) {
-            preparedStatement.setInt(1, Id);
+        try (Connection connection = (ds != null ? ds.getConnection() : getConnection());
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                int brand_id = resultSet.getInt("brand_id");
-                String model = resultSet.getString("model");
-                double price = resultSet.getDouble("price");
-                int quantity = resultSet.getInt("quantity");
-                phone2 = new MobilePhone(id,brand_id,model,quantity,price);
+            preparedStatement.setInt(1, id);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    int phoneId = rs.getInt("id");
+                    int brand_id = rs.getInt("brand_id");
+                    String model = rs.getString("model");
+                    int quantity = rs.getInt("quantity");
+                    double price = rs.getDouble("price");
+
+                    // Create the MobilePhone object.
+                    phone = new MobilePhone(phoneId, brand_id, model, quantity, price);
+
+                    // Retrieve the specifications.
+                    String storage = rs.getString("storage");
+                    String chipset = rs.getString("chipset");
+
+                    if (storage != null || chipset != null) {
+                        Specifications spec = new Specifications();
+                        spec.setPhone_id(phoneId);
+                        spec.setStorage(storage);
+                        spec.setChipset(chipset);
+                        phone.setSpecifications(spec);
+                    }
+                }
             }
         } catch (SQLException e) {
-            throw new DaoException("getById() " + e.getMessage());
+            throw new DaoException("Error in getById(): " + e.getMessage(), e);
         }
 
-        return phone2;
+        return phone;
     }
+
 
     // Feature 4
     @Override
@@ -202,6 +243,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     @Override
     public boolean existsById(int id) throws DaoException {
         String sql = "SELECT COUNT(*) FROM mobile_phone WHERE id = ?";
+
         try (Connection connection = (ds != null ? ds.getConnection() : getConnection());
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
@@ -212,9 +254,12 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
                     return count > 0;
                 }
             }
+
         } catch (SQLException e) {
-            throw new DaoException("Error getting DB connection", e);
+            throw new DaoException("Error in existsById(): " + e.getMessage(), e);
         }
+
         return false;
     }
+
 }
