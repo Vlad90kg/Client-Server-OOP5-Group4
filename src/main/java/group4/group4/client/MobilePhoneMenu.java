@@ -38,7 +38,7 @@ public class MobilePhoneMenu {
             MobilePhone mobilePhone;
             while (!exit) {
 
-                System.out.println("=== Mobile Phone Management System ===");
+                System.out.println("=== Mobile Phone Management Menu ===");
                 System.out.println("1. Display All Phones");
                 System.out.println("2. Search Phone by ID");
                 System.out.println("3. Delete Phone by ID");
@@ -46,7 +46,7 @@ public class MobilePhoneMenu {
                 System.out.println("5. Update Phone");
                 System.out.println("6. Filter Phones by price:");
                 System.out.println("7. Download image from server");
-                System.out.println("8. Exit");
+                System.out.println("8. Back to main menu");
                 System.out.print("Enter your choice: ");
 
                 int choice = 0;

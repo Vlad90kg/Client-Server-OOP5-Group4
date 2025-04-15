@@ -34,6 +34,7 @@ public class Main {
             boolean exit = false;
 
             MobilePhoneMenu mobilePhoneMenu = new MobilePhoneMenu(scanner, socket, out, in);
+            BrandMenu brandMenu = new BrandMenu(scanner, socket, out, in);
             while (!exit) {
                 System.out.println("=== Mobile Phone Management System ===");
                 System.out.println("1. Phones menu");
@@ -53,6 +54,7 @@ public class Main {
                         mobilePhoneMenu.display();
                         break;
                     case 2:
+                        brandMenu.display();
                         //
                         break;
                     case 3:
