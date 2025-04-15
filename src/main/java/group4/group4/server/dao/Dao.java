@@ -16,4 +16,5 @@ public interface Dao <T> {
     int update(int id, T t) throws DaoException;
     int delete(int id)throws DaoException;
     List<T> findByFilter(Comparator<T> comparator, double treshold) throws DaoException;
+    boolean existsById(int id) throws DaoException;
 }

@@ -138,7 +138,7 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
             statement.setString(2, mobilePhone.getModel());
             statement.setInt(3, mobilePhone.getQuantity());
             statement.setDouble(4, mobilePhone.getPrice());
-            statement.setDouble(5, id);
+            statement.setInt(5, id);
 
             return statement.executeUpdate();
         }
@@ -168,13 +168,13 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
                 }
             }catch (SQLException e){
                 connection.rollback();
-                throw new RuntimeException(e);
+                throw new DaoException("delete() rollback happened" + e.getMessage());
             }
             connection.commit();
             return affectedPhones;
 
         } catch (SQLException e) {
-            throw new DaoException("delete() " + e.getMessage());
+            throw new DaoException("delete()  is failed" + e.getMessage());
         }
 
     }
@@ -182,15 +182,39 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
     // Feature 6
     @Override
     public List<MobilePhone> findByFilter(Comparator<MobilePhone> comparator, double price) throws DaoException {
-        List<MobilePhone> mobilePhones = getAll();
-        List<MobilePhone> filteredMobilePhones = new ArrayList<>();
+        try {
+            List<MobilePhone> mobilePhones = getAll();
+            List<MobilePhone> filteredMobilePhones = new ArrayList<>();
 
-        MobilePhone mobilePhone = new MobilePhone(price);
-        for (MobilePhone phone : mobilePhones) {
-            if(comparator.compare(phone, mobilePhone) >= 0) {
-                filteredMobilePhones.add(phone);
+            MobilePhone mobilePhone = new MobilePhone(price);
+            for (MobilePhone phone : mobilePhones) {
+                if(comparator.compare(phone, mobilePhone) >= 0) {
+                    filteredMobilePhones.add(phone);
+                }
             }
+            return filteredMobilePhones;
+        } catch (SQLException e) {
+            throw new DaoException("findByFilter() " + e.getMessage());
         }
-        return filteredMobilePhones;
+
+    }
+
+    @Override
+    public boolean existsById(int id) throws DaoException {
+        String sql = "SELECT COUNT(*) FROM mobile_phone WHERE id = ?";
+        try (Connection connection = (ds != null ? ds.getConnection() : getConnection());
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int count = rs.getInt(1);
+                    return count > 0;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Error getting DB connection", e);
+        }
+        return false;
     }
 }
