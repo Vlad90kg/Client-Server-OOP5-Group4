@@ -119,7 +119,7 @@ public class DaoBrandImpl extends MySqlDao implements DaoBrand {
     public int delete(int id) throws DaoException {
         String deletePhonesQuery = "DELETE FROM mobile_phone WHERE id IN (SELECT id FROM mobile_phone WHERE brand_id = ?)";
         String deleteBrandQuery = "DELETE FROM brand WHERE id = ?";
-        int affectedPhones = 0;
+        int affectedBrands = 0;
         try (
                 Connection connection = (ds != null ? ds.getConnection() : getConnection());
         ){
@@ -133,14 +133,14 @@ public class DaoBrandImpl extends MySqlDao implements DaoBrand {
 
                 try( PreparedStatement preparedStatement = connection.prepareStatement(deleteBrandQuery);){
                     preparedStatement.setInt(1, id);
-                    affectedPhones = preparedStatement.executeUpdate();
+                    affectedBrands = preparedStatement.executeUpdate();
                 }
             }catch (SQLException e){
                 connection.rollback();
                 throw new DaoException("delete() rollback happened" + e.getMessage());
             }
             connection.commit();
-            return affectedPhones;
+            return affectedBrands;
 
         } catch (SQLException e) {
             throw new DaoException("delete()  is failed" + e.getMessage());

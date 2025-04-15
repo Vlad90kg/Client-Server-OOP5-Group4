@@ -206,8 +206,9 @@ public class ClientHandler implements Runnable {
                     break;
                 case "insertBrand":
                     JSONArray jsonArray = new JSONArray(jsonString);
-
+                    System.out.println("jsonarrbrand + " + jsonArray);
                     Brand toInsert = new Brand(jsonArray.getJSONObject(0));
+                    System.out.println("toisnerd + " + toInsert);
                     String insertPhoneString = jsonConverter.brandToJson(daoBrand.insert(toInsert));
                     out.println(insertPhoneString);
                     break;

@@ -1,10 +1,14 @@
 package group4.group4.client;
 
+import group4.group4.server.JsonConverter;
 import group4.group4.server.dto.Brand;
 import group4.group4.server.dto.MobilePhone;
+import group4.group4.server.dto.Specifications;
+import group4.group4.util.InputValidation;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.xml.namespace.QName;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -29,7 +33,7 @@ public class BrandMenu {
         try {
             boolean exit = false;
             boolean valid = false;
-            String response;
+            String response, description = "", name = "", input;
             while (!exit) {
                 System.out.println("=== Phone Brands Management Menu ===");
                 System.out.println("1. Display All Brands");
@@ -90,7 +94,40 @@ public class BrandMenu {
                     case 3:
                         break;
                     case 4:
+                        System.out.println("Enter: ");
+                        valid = false;
+                        while (!valid) {
+                            System.out.print("Name: ");
+                            input = scanner.nextLine();
+                            valid = InputValidation.validateString(input);
+                            if (!valid) continue;
+                            name = input;
+                        }
+                        valid = false;
+                        while (!valid) {
+                            System.out.print("Description: ");
+                            input = scanner.nextLine();
+                            valid = InputValidation.validateString(input);
+                            if (valid) description = input;
 
+                        }
+                        valid = false;
+
+                        Brand brandToInsert = new Brand(name, description);
+
+                        JsonConverter jsonConverter = new JsonConverter();
+                        JSONObject brandJson = jsonConverter.serializeBrand(brandToInsert);
+
+                        JSONArray brandJsonArray = new JSONArray();
+                        brandJsonArray.put(brandJson);
+
+                        System.out.println("array to send" + brandJsonArray);
+                        String jsonString = brandJsonArray.toString();
+                        out.println("insertBrand." + jsonString);
+                        response = in.readLine();
+                        System.out.println(response);
+                        Brand brand = new Brand(new JSONObject(response));
+                        System.out.println(brand);
                         break;
                     case 5:
                         break;
