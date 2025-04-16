@@ -31,11 +31,11 @@ public class MobilePhoneMenu {
     public void display() {
         try {
             int id = 0, quantity = 0, brand_id = 0;
-            String model = "", storage = "", chipset = "", input, response;
+            String model = "", storage = "", chipset = "", input = "", response = "";
             double price = 0.0;
             boolean exit = false;
             boolean valid = false;
-            MobilePhone mobilePhone;
+            MobilePhone mobilePhone = null;
             while (!exit) {
 
                 System.out.println("=== Mobile Phone Management Menu ===");
@@ -58,19 +58,7 @@ public class MobilePhoneMenu {
                 System.out.println();
                 switch (choice) {
                     case 1:
-                        String getAllString = "getAllPhone";
-                        out.println(getAllString);
-                        response = in.readLine();
-                        JSONArray jsonArray = new JSONArray(response);
-                        List<MobilePhone> mobilePhones = new ArrayList<>();
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                            mobilePhones.add(new MobilePhone(jsonObject));
-                        }
-                        for (MobilePhone mp : mobilePhones) {
-                            System.out.println(mp);
-                        }
+                        getAllOption(response);
                         break;
                     case 2:
                         int idToFind = -1;
@@ -91,7 +79,11 @@ public class MobilePhoneMenu {
                         String req = "getByPhoneId." + idToFind;
                         out.println(req);
                         String res = in.readLine();
-                        System.out.println(res + "\n");
+                        if(res == null) {
+                            System.out.println("Response is null");
+                        }else{
+                            System.out.println(res + "\n");
+                        }
                         break;
                     case 3:
                         int idToDelete = -1;
@@ -110,163 +102,15 @@ public class MobilePhoneMenu {
                         break;
 
                     case 4:
-                        System.out.println("Enter: ");
-                        valid = false;
-                        while (!valid) {
-                            System.out.print("Brand ID: ");
-                            input = scanner.nextLine();
-                            valid = InputValidation.validateInt(input);
-                            if (valid) brand_id = Integer.parseInt(input);
-                        }
-                        valid = false;
-                        while (!valid) {
-                            System.out.print("Model: ");
-                            input = scanner.nextLine();
-                            valid = InputValidation.validateString(input);
-                            if (!valid) continue;
-                            model = input;
-                        }
-                        valid = false;
-                        while (!valid) {
-                            System.out.print("Quantity: ");
-                            input = scanner.nextLine();
-                            valid = InputValidation.validateInt(input);
-                            if (valid) quantity = Integer.parseInt(input);
-                        }
-                        valid = false;
-                        while (!valid) {
-                            System.out.print("Price: ");
-                            input = scanner.nextLine();
-                            valid = InputValidation.validateDouble(input);
-                            if (valid) price = Double.parseDouble(input);
-                        }
-                        valid = false;
-                        while (!valid) {
-                            System.out.println("Add phone specifications: ");
-                            System.out.print("Storage: ");
-                            input = scanner.nextLine();
-                            valid = InputValidation.validateString(input);
-                            if (valid) storage = input;
-
-                        }
-
-                        valid = false;
-
-                        while (!valid) {
-                            System.out.print("Chipset: ");
-                            input = scanner.nextLine();
-                            valid = InputValidation.validateString(input);
-                            if (valid) chipset = input;
-                        }
-
-                        Specifications specifications = new Specifications(storage, chipset);
-                        MobilePhone phoneToInsert = new MobilePhone(specifications, brand_id, model, quantity, price);
-
-                        JsonConverter jsonConverter = new JsonConverter();
-                        JSONObject phoneJson = jsonConverter.serializeMobilePhone(phoneToInsert);
-                        JSONObject specJson = jsonConverter.serializeSpecifications(phoneToInsert);
-
-                        JSONArray phoneSpecArray = new JSONArray();
-                        phoneSpecArray.put(phoneJson);
-                        phoneSpecArray.put(specJson);
-
-                        System.out.println("array to send" + phoneSpecArray);
-                        String jsonString = phoneSpecArray.toString();
-                        out.println("insertPhone." + jsonString);
-                        response = in.readLine();
-                        System.out.println(response);
-                        mobilePhone = new MobilePhone(new JSONObject(response));
-                        System.out.println(mobilePhone);
+                        insertMobilePhone(mobilePhone,valid, response, input, brand_id, model, quantity, price, storage, chipset);
                         break;
 
                     case 5:
-                        System.out.println("Please enter the threshold price: ");
-                        try {
-                            price = Double.parseDouble(scanner.nextLine());
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a number.");
-                            continue;
-                        }
-                        List<MobilePhone> filteredMobilePhones = new ArrayList<>();
+                        filterMobilePhone(mobilePhone,valid,response,price);
 
-                        String findByFilter = "getPhoneByFilter." + price;
-                        out.println(findByFilter);
-                        String filterResult = in.readLine();
-                        JSONArray getByFilterJson = new JSONArray(filterResult);
-
-                        for (int i = 0; i < getByFilterJson.length(); i++) {
-                            JSONObject jsonObject = getByFilterJson.getJSONObject(i);
-                            System.out.println(jsonObject);
-                            mobilePhone = new MobilePhone(jsonObject);
-                            filteredMobilePhones.add(mobilePhone);
-                        }
-                        System.out.println(filteredMobilePhones);
                         break;
                     case 6:
-                        System.out.println("1. Display available images");
-                        System.out.println("2. Download image from server");
-                        System.out.println("3. Dowload all images");
-
-                        String optionInput = scanner.nextLine();
-                        valid = InputValidation.validateInt(optionInput);
-                        if (valid) {
-                            int option = Integer.parseInt(optionInput);
-                            switch (option) {
-                                case 1:
-                                    String request = "getPhoneFileNames";
-                                    out.println(request);
-                                    String fileNames = in.readLine();
-                                    for (String fileName : fileNames.split(",")) {
-                                        System.out.println(fileName);
-                                    }
-                                    break;
-                                case 2:
-                                    System.out.println("Input image name: ");
-                                    input = scanner.nextLine();
-                                    valid = InputValidation.validateString(input);
-                                    if (valid) // Send the command "getImage.[imageName]" on your command channel
-                                        out.println("getPhoneImage." + input);
-                                    String imageName = "images/" + input;
-                                    System.out.println(imageName);
-
-                                    DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-                                    long fileSize = dataInputStream.readLong();
-                                    System.out.println("File size: " + fileSize + " bytes");
-
-                                    byte[] fileData = new byte[(int) fileSize];
-                                    dataInputStream.readFully(fileData);
-
-                                    try (FileOutputStream fileOutputStream = new FileOutputStream(imageName)) {
-                                        fileOutputStream.write(fileData);
-                                    }
-                                    System.out.println("File is Received");
-
-
-                                    break;
-                                case 3:
-                                    out.println("getAllPhoneImages");
-                                    DataInputStream dis = new DataInputStream(socket.getInputStream());
-                                    long zipLength = dis.readLong();
-                                    System.out.println("ZIP file size: " + zipLength + " bytes");
-
-                                    byte[] zipBytes = new byte[(int) zipLength];
-                                    dis.readFully(zipBytes);
-
-                                    File zipFile = new File("downloadedImages.zip");
-                                    try (FileOutputStream fos = new FileOutputStream(zipFile)) {
-                                        fos.write(zipBytes);
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                    System.out.println("ZIP file received: " + zipFile.getAbsolutePath());
-                                    unzipFile(zipFile, new File("images"));
-                                    break;
-                                default:
-                                    System.out.println("Invalid input. Please enter 1,2 or 3.");
-                            }
-                        } else {
-                            System.out.println("Invalid input. Please enter a number.");
-                        }
+                        imageSubmenu(valid, input);
                         break;
 
                     case 7:
@@ -284,9 +128,232 @@ public class MobilePhoneMenu {
         }
     }
 
+    private void insertMobilePhone(MobilePhone mobilePhone, boolean valid, String response, String input, int brand_id, String model, int quantity, double price, String storage, String chipset) {
+        try{
+            System.out.println("Enter: ");
+            valid = false;
+            while (!valid) {
+                System.out.print("Brand ID: ");
+                input = scanner.nextLine();
+                valid = InputValidation.validateInt(input);
+                if (valid) brand_id = Integer.parseInt(input);
+            }
+            valid = false;
+            while (!valid) {
+                System.out.print("Model: ");
+                input = scanner.nextLine();
+                valid = InputValidation.validateString(input);
+                if (!valid) continue;
+                model = input;
+            }
+            valid = false;
+            while (!valid) {
+                System.out.print("Quantity: ");
+                input = scanner.nextLine();
+                valid = InputValidation.validateInt(input);
+                if (valid) quantity = Integer.parseInt(input);
+            }
+            valid = false;
+            while (!valid) {
+                System.out.print("Price: ");
+                input = scanner.nextLine();
+                valid = InputValidation.validateDouble(input);
+                if (valid) price = Double.parseDouble(input);
+            }
+            valid = false;
+            while (!valid) {
+                System.out.println("Add phone specifications: ");
+                System.out.print("Storage: ");
+                input = scanner.nextLine();
+                valid = InputValidation.validateString(input);
+                if (valid) storage = input;
+
+            }
+
+            valid = false;
+
+            while (!valid) {
+                System.out.print("Chipset: ");
+                input = scanner.nextLine();
+                valid = InputValidation.validateString(input);
+                if (valid) chipset = input;
+            }
+
+            Specifications specifications = new Specifications(storage, chipset);
+            MobilePhone phoneToInsert = new MobilePhone(specifications, brand_id, model, quantity, price);
+
+            JsonConverter jsonConverter = new JsonConverter();
+            JSONObject phoneJson = jsonConverter.serializeMobilePhone(phoneToInsert);
+            JSONObject specJson = jsonConverter.serializeSpecifications(phoneToInsert);
+
+            JSONArray phoneSpecArray = new JSONArray();
+            phoneSpecArray.put(phoneJson);
+            phoneSpecArray.put(specJson);
+
+            System.out.println("array to send" + phoneSpecArray);
+            String jsonString = phoneSpecArray.toString();
+            out.println("insertPhone." + jsonString);
+            response = in.readLine();
+            System.out.println(response);
+            if (response == null) {
+                System.out.println("Response is null");
+            }else if (response.equals("Brand not found")) {
+                System.out.println("Brand not found");
+            } else {
+                mobilePhone = new MobilePhone(new JSONObject(response));
+                System.out.println(mobilePhone);
+            }
+        }catch (IOException e){
+            System.out.println("Connection issues" + e.getMessage());
+        }
 
 
-    public void unzipFile(File downloadZipFile, File extractTo) {
+
+    }
+
+    private  void  getAllOption(String response){
+        try {
+            String getAllString = "getAllPhone";
+            out.println(getAllString);
+            response = in.readLine();
+            if(response == null) {
+                System.out.println("response is null");
+            } else {
+                JSONArray jsonArray = new JSONArray(response);
+                List<MobilePhone> mobilePhones = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                    mobilePhones.add(new MobilePhone(jsonObject));
+                }
+                for (MobilePhone mp : mobilePhones) {
+                    System.out.println(mp);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Connection issues" + e.getMessage());
+        }
+    }
+
+    private void filterMobilePhone(MobilePhone mobilePhone, boolean valid, String response , double price) {
+        try {
+            System.out.println("Please enter the threshold price: ");
+            try {
+                price = Double.parseDouble(scanner.nextLine());
+
+                List<MobilePhone> filteredMobilePhones = new ArrayList<>();
+
+                String findByFilter = "getPhoneByFilter." + price;
+                out.println(findByFilter);
+                String filterResult = in.readLine();
+                if(filterResult == null) {
+                    System.out.println("Response is null");
+                }else {
+                    JSONArray getByFilterJson = new JSONArray(filterResult);
+
+                    for (int i = 0; i < getByFilterJson.length(); i++) {
+                        JSONObject jsonObject = getByFilterJson.getJSONObject(i);
+                        System.out.println(jsonObject);
+                        mobilePhone = new MobilePhone(jsonObject);
+                        filteredMobilePhones.add(mobilePhone);
+                    }
+                    System.out.println(filteredMobilePhones);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+            }
+
+        }catch (IOException e){
+            System.out.println("Connection issues" + e.getMessage());
+        }
+    }
+    private void imageSubmenu(boolean valid, String input) {
+        try {
+            System.out.println("1. Display available images");
+            System.out.println("2. Download image from server");
+            System.out.println("3. Dowload all images");
+
+            String optionInput = scanner.nextLine();
+            valid = InputValidation.validateInt(optionInput);
+            if (valid) {
+                int option = Integer.parseInt(optionInput);
+                switch (option) {
+                    case 1:
+                        String request = "getPhoneFileNames";
+                        out.println(request);
+                        String fileNames = in.readLine();
+                        if (fileNames == null) {
+                            System.out.println("Response is null");
+                        }else {
+                            for (String fileName : fileNames.split(",")) {
+                                System.out.println(fileName);
+                            }
+                        }
+
+                        break;
+                    case 2:
+                        System.out.println("Input image name: ");
+                        input = scanner.nextLine();
+                        valid = InputValidation.validateString(input);
+                        if (valid) // Send the command "getImage.[imageName]" on your command channel
+                            out.println("getPhoneImage." + input);
+                        String imageName = "images/" + input;
+                        System.out.println(imageName);
+                        if(in.readLine() == null){
+                            System.out.println("Response is null");
+                        } else if (in.readLine().equals("Image not found")) {
+                            System.out.println("Image not found");
+                        } else {
+                            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                            long fileSize = dataInputStream.readLong();
+                            System.out.println("File size: " + fileSize + " bytes");
+
+                            byte[] fileData = new byte[(int) fileSize];
+                            dataInputStream.readFully(fileData);
+
+                            try (FileOutputStream fileOutputStream = new FileOutputStream(imageName)) {
+                                fileOutputStream.write(fileData);
+                            } catch (IOException e) {
+                                System.out.println("Error writing file" + e.getMessage());
+                            }
+                            System.out.println("File is Received");
+                        }
+                        break;
+                    case 3:
+                        out.println("getAllPhoneImages");
+                        if(in.readLine() == null){
+                            System.out.println("Response is null");
+                        } else {
+                            DataInputStream dis = new DataInputStream(socket.getInputStream());
+                            long zipLength = dis.readLong();
+                            System.out.println("ZIP file size: " + zipLength + " bytes");
+
+                            byte[] zipBytes = new byte[(int) zipLength];
+                            dis.readFully(zipBytes);
+
+                            File zipFile = new File("downloadedImages.zip");
+                            try (FileOutputStream fos = new FileOutputStream(zipFile)) {
+                                fos.write(zipBytes);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            System.out.println("ZIP file received: " + zipFile.getAbsolutePath());
+                            unzipFile(zipFile, new File("images"));
+                        }
+
+                        break;
+                    default:
+                        System.out.println("Invalid input. Please enter 1,2 or 3.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number.");
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void unzipFile(File downloadZipFile, File extractTo) {
         try (FileInputStream fileInputStream = new FileInputStream(downloadZipFile);
              BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
              ZipInputStream zipInputStream = new ZipInputStream(bufferedInputStream)) {

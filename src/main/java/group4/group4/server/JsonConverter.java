@@ -66,6 +66,7 @@ public class JsonConverter {
 
 
     public String brandsListJson(List<Brand> brandsList){
+
         if(brandsList == null){
             System.out.println("Brands list is null");
             return null;

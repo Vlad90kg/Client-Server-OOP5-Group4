@@ -40,9 +40,8 @@ public class BrandMenu {
                 System.out.println("2. Search Brand by ID");
                 System.out.println("3. Delete Brand by ID");
                 System.out.println("4. Insert Brand");
-                System.out.println("5. Ch");
-                System.out.println("6. Filter Brand by ...:");
-                System.out.println("7. Back to main menu");
+                System.out.println("5. Get phones related to Brand");
+                System.out.println("6. Back to main menu");
 
                 System.out.print("Enter your choice: ");
                 int choice = 0;
@@ -143,10 +142,32 @@ public class BrandMenu {
                         System.out.println(brand);
                         break;
                     case 5:
+                        System.out.println("Enter brand id: ");
+                        input = scanner.nextLine();
+                        valid = InputValidation.validateInt(input);
+                        if (!valid) continue;
+                        out.println("getRelatedToBrandById." + input);
+                        response = in.readLine();
+                        if(response.equals("Brand not found")){
+                            System.out.println("Brand not found");
+                        }else {
+                            String[] arr = response.split("/");
+
+                            JSONObject jsonObject = new JSONObject(arr[0]);
+                            Brand brand1 = new Brand(jsonObject);
+                            System.out.println(brand1);
+                            jsonArray = new JSONArray(arr[1]);
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                jsonObject = jsonArray.getJSONObject(i);
+                                System.out.println(new MobilePhone(jsonObject));
+                            }
+                        }
+
+
+
                         break;
                     case 6:
-                        break;
-                    case 7:
                         exit = true;
                         break;
                     default:
@@ -155,5 +176,8 @@ public class BrandMenu {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+
     }
 }

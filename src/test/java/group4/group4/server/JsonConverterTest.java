@@ -16,6 +16,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class JsonConverterTest {
     DaoMobilePhone daoMobilePhone = new DaoMobilePhone() {
         @Override
+        public List<MobilePhone> getPhoneByBrand(int brand) throws DaoException {
+            return List.of();
+        }
+
+        @Override
         public List<MobilePhone> getAll() throws DaoException {
             List<MobilePhone> mobilePhones = new ArrayList<>();
             MobilePhone phone1 = new MobilePhone(1,1, "lool",55, 256);
@@ -48,6 +53,11 @@ class JsonConverterTest {
         @Override
         public List<MobilePhone> findByFilter(Comparator<MobilePhone> comparator, double treshold) throws DaoException {
             return List.of();
+        }
+
+        @Override
+        public boolean existsById(int id) throws DaoException {
+            return false;
         }
     };
 

@@ -9,6 +9,7 @@ import group4.group4.server.dto.Brand;
 import group4.group4.server.dto.MobilePhone;
 import group4.group4.server.dto.Specifications;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 import java.io.*;
@@ -36,8 +37,6 @@ public class ClientHandler implements Runnable {
             System.out.println("Client connected");
             JsonConverter jsonConverter = new JsonConverter();
             String inputLine, jsonString = "", imageName = "";
-            FileInputStream fileInputStream;
-            DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
 
             boolean exit = false;
             while (!exit) {
@@ -57,9 +56,10 @@ public class ClientHandler implements Runnable {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Client disconnected" + e.getMessage());
+
         } catch (DaoException e) {
-            throw new RuntimeException(e);
+            System.out.println("Database issues " + e.getMessage());
         }
     }
 
@@ -102,12 +102,18 @@ public class ClientHandler implements Runnable {
                         break;
                     case "insertPhone":
                         JSONArray jsonArray = new JSONArray(jsonString);
+                        int brand_id = jsonArray.getJSONObject(0).getInt("brand_id");
+                        if(daoMobilePhone.existsById(brand_id)){
+                            MobilePhone toInsert = new MobilePhone(jsonArray.getJSONObject(0));
+                            Specifications specifications = new Specifications(jsonArray.getJSONObject(1));
+                            toInsert.setSpecifications(specifications);
+                            String insertPhoneString = jsonConverter.phoneToJson(daoMobilePhone.insert(toInsert));
+                            out.println(insertPhoneString);
+                        }else {
+                            out.println("Brand not found");
+                        }
 
-                        MobilePhone toInsert = new MobilePhone(jsonArray.getJSONObject(0));
-                        Specifications specifications = new Specifications(jsonArray.getJSONObject(1));
-                        toInsert.setSpecifications(specifications);
-                        String insertPhoneString = jsonConverter.phoneToJson(daoMobilePhone.insert(toInsert));
-                        out.println(insertPhoneString);
+
                         break;
                     case "getPhoneByFilter":
                         String findByFilter = jsonConverter.phonesListJson(getFilteredPhones(daoMobilePhone, price));
@@ -132,21 +138,24 @@ public class ClientHandler implements Runnable {
                         break;
                     case "getPhoneImage":
                         File file = new File("images/" + imageName);
-                        try (FileInputStream fis = new FileInputStream(file);
-                             BufferedInputStream bis = new BufferedInputStream(fis)) {
-                            DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
-                            long fileSize = file.length();
-                            System.out.println(fileSize);
-                            dos.writeLong(fileSize);
-                            byte[] buffer = new byte[4096];
-                            int bytesRead;
-                            while ((bytesRead = bis.read(buffer)) != -1) {
-                                System.out.println(bytesRead);
-                                dos.write(buffer, 0, bytesRead);
+                        if(file.exists()){
+                            try (FileInputStream fis = new FileInputStream(file);
+                                 BufferedInputStream bis = new BufferedInputStream(fis)) {
+                                DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
+                                long fileSize = file.length();
+                                System.out.println(fileSize);
+                                dos.writeLong(fileSize);
+                                byte[] buffer = new byte[4096];
+                                int bytesRead;
+                                while ((bytesRead = bis.read(buffer)) != -1) {
+                                    System.out.println(bytesRead);
+                                    dos.write(buffer, 0, bytesRead);
+                                }
+                                dos.flush();
                             }
-                            dos.flush();
+                        } else {
+                            out.println("Image not found");
                         }
-
                         break;
 
                     case "getAllPhoneImages":
@@ -175,7 +184,7 @@ public class ClientHandler implements Runnable {
     private boolean brandHandler(String inputLine, JsonConverter jsonConverter, String jsonString, PrintWriter out, BufferedReader in) throws DaoException {
         try{
             DaoBrandImpl daoBrand = new DaoBrandImpl();
-
+            JSONArray jsonArray = new JSONArray();
             int intArgument = 0;
             if (inputLine.startsWith("getBrandById")) {
                 intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
@@ -183,12 +192,12 @@ public class ClientHandler implements Runnable {
             } else if (inputLine.startsWith("deleteBrandById")) {
                 intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
                 inputLine = "deleteBrandById";
-            } else if (inputLine.startsWith("getBrandByFilter")) {
-//                price = Double.parseDouble(inputLine.substring(inputLine.indexOf('.') + 1));
-                inputLine = "getBrandByFilter";
-            } else if (inputLine.startsWith("insertBrand")) {
+            }  else if (inputLine.startsWith("insertBrand")) {
                 jsonString = inputLine.substring(inputLine.indexOf('.') + 1);
                 inputLine = "insertBrand";
+            } else if (inputLine.startsWith("getRelatedToBrandById")) {
+                intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
+                inputLine = "getRelatedToBrandById";
             }
             System.out.println(inputLine+"<<<<<<");
             switch (inputLine) {
@@ -205,18 +214,28 @@ public class ClientHandler implements Runnable {
                     out.println(deletionResponse);
                     break;
                 case "insertBrand":
-                    JSONArray jsonArray = new JSONArray(jsonString);
-                    System.out.println("jsonarrbrand + " + jsonArray);
+                    jsonArray = new JSONArray(jsonString);
                     Brand toInsert = new Brand(jsonArray.getJSONObject(0));
-                    System.out.println("toisnerd + " + toInsert);
                     String insertPhoneString = jsonConverter.brandToJson(daoBrand.insert(toInsert));
                     out.println(insertPhoneString);
                     break;
-                case "getBrandByFilter":
-//                    String findByFilter = jsonConverter.phonesListJson(getFilteredPhones(daoBrand, price));
-//                    out.println(findByFilter);
-                    break;
 
+                case "getRelatedToBrandById":
+                    if(daoBrand.existsById(intArgument)){
+                        DaoMobilePhone daoMobilePhone = new DaoMobilePhoneImpl();
+                        Brand brand = getBrandById(daoBrand, intArgument);
+                        List<MobilePhone> phones = daoMobilePhone.getPhoneByBrand(intArgument);
+                        JSONObject brandJson = new JSONObject();
+                        brandJson = jsonConverter.serializeBrand(brand);
+                        String brandJsonString = brandJson.toString();
+                        String phonesJsonString = jsonConverter.phonesListJson(phones);
+                        out.println(brandJsonString + "/" + phonesJsonString);
+                    } else {
+                        out.println("Brand not found");
+                    }
+
+
+                    break;
                 case "exitBrand":
                     System.out.println("Exiting...");
                     return true;

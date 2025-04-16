@@ -9,7 +9,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Scanner;
 
 public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
 
@@ -262,4 +261,44 @@ public class DaoMobilePhoneImpl extends MySqlDao implements DaoMobilePhone {
         return false;
     }
 
+    @Override
+    public List<MobilePhone> getPhoneByBrand(int brand) throws DaoException {
+        String sql = "Select * from mobile_phone where brand_id = ?";
+        List<MobilePhone> mobilePhones = new ArrayList<>();
+        MobilePhone phone = new MobilePhone();
+        try (Connection connection = (ds != null ? ds.getConnection() : getConnection());
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, brand);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    int phoneId = rs.getInt("id");
+                    int brand_id = rs.getInt("brand_id");
+                    String model = rs.getString("model");
+                    int quantity = rs.getInt("quantity");
+                    double price = rs.getDouble("price");
+
+                    // Create the MobilePhone object.
+                    phone = new MobilePhone(phoneId, brand_id, model, quantity, price);
+
+                    // Retrieve the specifications.
+//                    String storage = rs.getString("storage");
+//                    String chipset = rs.getString("chipset");
+//
+//                    if (storage != null || chipset != null) {
+//                        Specifications spec = new Specifications();
+//                        spec.setPhone_id(phoneId);
+//                        spec.setStorage(storage);
+//                        spec.setChipset(chipset);
+//                        phone.setSpecifications(spec);
+//                    }
+                    mobilePhones.add(phone);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Error fetching mobile phones: " + e.getMessage(), e);
+        }
+        return mobilePhones;
+    }
 }
