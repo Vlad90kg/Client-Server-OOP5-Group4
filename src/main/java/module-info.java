@@ -7,7 +7,6 @@ module group.group {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
-    requires eu.hansolo.tilesfx;
     requires java.sql;
     requires org.json;
     requires mysql.connector.java;
