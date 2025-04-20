@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" spacing="25.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group4.group4.client.GUI.Controller">
+   <children>
+      <Label fx:id="titleText" text="Mobile Phone Management Menu">
+         <font>
+            <Font name="Arial Bold" size="24.0" />
+         </font></Label>
+      <VBox alignment="CENTER" prefHeight="85.0" prefWidth="640.0" spacing="15.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="25.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Display all phones" />
+                  <Button mnemonicParsing="false" text="Search phone by ID" />
+                   <Button mnemonicParsing="false" text="Delete phone by ID" />
+                   <Button mnemonicParsing="false" text="Insert phone" />
+               </children>
+            </HBox>
+             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="25.0">
+                 <children>
+                     <Button mnemonicParsing="false" text="Filter phones by price" />
+                     <Button mnemonicParsing="false" text="Download image from server" />
+                     <Button mnemonicParsing="false" onAction="#toMainMenu" text="Back to main menu" />
+                 </children>
+             </HBox>
+         </children>
+      </VBox>
+   </children>
+</VBox>
