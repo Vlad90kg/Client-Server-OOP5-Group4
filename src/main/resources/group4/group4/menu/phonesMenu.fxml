@@ -16,7 +16,7 @@
                <children>
                   <Button mnemonicParsing="false" onAction="#displayAllPhones" text="Display all phones" />
                   <Button mnemonicParsing="false" onAction="#searchPhone" text="Search phone by ID" />
-                   <Button mnemonicParsing="false" text="Delete phone by ID" />
+                   <Button mnemonicParsing="false" onAction="#deletePhone" text="Delete phone by ID" />
                    <Button mnemonicParsing="false" text="Insert phone" />
                </children>
             </HBox>

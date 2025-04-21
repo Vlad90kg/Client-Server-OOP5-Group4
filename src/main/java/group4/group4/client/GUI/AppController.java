@@ -31,6 +31,9 @@ public class AppController {
             case 12:
                 newScene = new FXMLLoader(getClass().getResource("/group4/group4/MPMMScenes/searchPhone.fxml"));
                 break;
+            case 13:
+                newScene = new FXMLLoader(getClass().getResource("/group4/group4/MPMMScenes/deletePhone.fxml"));
+                break;
             default:
                 System.out.println("Invalid option passed to optionHandler()");
                 break;
@@ -43,17 +46,14 @@ public class AppController {
 
     // Main Menu
     @FXML protected void toMainMenu() throws IOException { optionHandler(0); }
-
     @FXML protected void toPhonesMenu() throws IOException { optionHandler(1); }
-
     @FXML protected void toBrandsMenu() throws IOException { optionHandler(2); }
-
     @FXML protected void exitButton() { Platform.exit(); }
 
     // Mobile Phones Management Menu
     @FXML protected void displayAllPhones() throws IOException { optionHandler(11); }
-
     @FXML protected void searchPhone() throws IOException { optionHandler(12); }
+    @FXML protected void deletePhone() throws IOException { optionHandler(13); }
 
     // Phone Brands Management Menu
     // Code will be here in the future
