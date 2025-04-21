@@ -1,6 +1,7 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
 import group4.group4.Exceptions.DaoException;
+import group4.group4.server.dao.DaoBrandImpl;
 import group4.group4.server.dto.MobilePhone;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,8 +18,8 @@ import group4.group4.server.dao.DaoMobilePhoneImpl;
 import javafx.stage.Stage;
 
 public class DAPController implements Initializable {
-    // Variables
     @FXML private final DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl();
+    @FXML private final DaoBrandImpl dbi = new DaoBrandImpl();
     @FXML private Label phonesList;
 
     @Override
@@ -26,13 +27,10 @@ public class DAPController implements Initializable {
         try {
             String mobilePhonesList = "";
             List<MobilePhone> mobilePhones = dmpi.getAll();
-
-            for (int i = 0; i < mobilePhones.size(); i++) mobilePhonesList += (i + 1) + ". " + mobilePhones.get(i).getModel() + "\n";
+            for (MobilePhone phone : mobilePhones) mobilePhonesList += phone.getId() + ". " + dbi.getById(phone.getBrandId()).getName() + " " + phone.getModel() + "\n";
             phonesList.setText(mobilePhonesList);
         }
-        catch (DaoException e) {
-            phonesList.setText("Unexpected error occurred");
-        }
+        catch (DaoException e) { phonesList.setText("Unexpected error occurred"); }
     }
 
     @FXML

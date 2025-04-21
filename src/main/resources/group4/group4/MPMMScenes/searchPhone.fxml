@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" spacing="25.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group4.group4.client.GUI.controllers.MPMM.SPController">
+    <children>
+        <Label text="Search phone">
+            <font>
+                <Font name="Arial Bold" size="24.0" />
+            </font></Label>
+      <HBox prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="320.0" spacing="15.0">
+               <children>
+                  <Label fx:id="brand" text="Brand:">
+                     <font>
+                        <Font name="Arial" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="model" text="Model:">
+                     <font>
+                        <Font name="Arial" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="quantity" text="Quantity:">
+                     <font>
+                        <Font name="Arial" size="16.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+                  <VBox alignment="CENTER" prefHeight="188.0" prefWidth="320.0" spacing="15.0">
+                      <children>
+                  <Label fx:id="price" layoutX="294.0" layoutY="153.0" text="Price:">
+                     <font>
+                        <Font name="Arial" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="storage" layoutX="294.0" layoutY="170.0" text="Storage:">
+                     <font>
+                        <Font name="Arial" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="chipset" layoutX="294.0" layoutY="188.0" text="Chipset:">
+                     <font>
+                        <Font name="Arial" size="16.0" />
+                     </font>
+                  </Label>
+                      </children>
+            </VBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="35.0" prefWidth="640.0" spacing="25.0">
+         <children>
+            <TextField fx:id="idField" promptText="Enter ID" />
+            <Button mnemonicParsing="false" onAction="#find" text="Find" />
+         </children>
+      </HBox>
+        <Button mnemonicParsing="false" onAction="#goBack" text="Go back" />
+    </children>
+</VBox>

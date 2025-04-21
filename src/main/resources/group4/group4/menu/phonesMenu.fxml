@@ -15,7 +15,7 @@
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="25.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#displayAllPhones" text="Display all phones" />
-                  <Button mnemonicParsing="false" text="Search phone by ID" />
+                  <Button mnemonicParsing="false" onAction="#searchPhone" text="Search phone by ID" />
                    <Button mnemonicParsing="false" text="Delete phone by ID" />
                    <Button mnemonicParsing="false" text="Insert phone" />
                </children>
