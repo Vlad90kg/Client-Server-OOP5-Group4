@@ -13,6 +13,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/group4/group4/main.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 640, 480);
+        stage.setResizable(false);
         stage.setTitle("Mobile Store");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/group4/group4/icon.png")));
         stage.setScene(scene);

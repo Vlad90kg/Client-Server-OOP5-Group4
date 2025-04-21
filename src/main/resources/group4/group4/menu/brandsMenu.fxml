@@ -13,16 +13,34 @@
       <VBox alignment="CENTER" prefHeight="85.0" prefWidth="640.0" spacing="15.0">
          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="25.0">
             <children>
-               <Button mnemonicParsing="false" text="Display all brands" />
-               <Button mnemonicParsing="false" text="Search brand by ID" />
-               <Button mnemonicParsing="false" text="Delete brand by ID" />
+               <Button mnemonicParsing="false" text="Display all brands">
+                  <font>
+                     <Font name="Arial" size="13.0" />
+                  </font></Button>
+               <Button mnemonicParsing="false" text="Search brand by ID">
+                  <font>
+                     <Font name="Arial" size="13.0" />
+                  </font></Button>
+               <Button mnemonicParsing="false" text="Delete brand by ID">
+                  <font>
+                     <Font name="Arial" size="13.0" />
+                  </font></Button>
             </children>
          </HBox>
          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="25.0">
             <children>
-               <Button mnemonicParsing="false" text="Insert brand" />
-               <Button mnemonicParsing="false" text="Get phones related to brand" />
-               <Button mnemonicParsing="false" onAction="#toMainMenu" text="Back to main menu" />
+               <Button mnemonicParsing="false" text="Insert brand">
+                  <font>
+                     <Font name="Arial" size="13.0" />
+                  </font></Button>
+               <Button mnemonicParsing="false" text="Get phones related to brand">
+                  <font>
+                     <Font name="Arial" size="13.0" />
+                  </font></Button>
+               <Button mnemonicParsing="false" onAction="#toMainMenu" text="Back to main menu">
+                  <font>
+                     <Font name="Arial" size="13.0" />
+                  </font></Button>
             </children>
          </HBox>
       </VBox>

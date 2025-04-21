@@ -1,6 +1,5 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
-import group4.group4.Exceptions.DaoException;
 import group4.group4.server.dao.DaoBrandImpl;
 import group4.group4.server.dto.MobilePhone;
 import javafx.fxml.FXML;
@@ -11,7 +10,6 @@ import javafx.scene.control.Label;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -30,28 +28,31 @@ public class FPController implements Initializable {
         try {
             String mobilePhonesList = "";
             List<MobilePhone> mobilePhones = dmpi.getAll();
-            for (MobilePhone phone : mobilePhones) mobilePhonesList += phone.getId() + ". " + dbi.getById(phone.getBrandId()).getName() + " " + phone.getModel() + "\n";
+            for (MobilePhone phone : mobilePhones) mobilePhonesList += phone.getId() + ". " + dbi.getById(phone.getBrandId()).getName() + " " + phone.getModel() + " ( $" + phone.getPrice() + " )" + "\n";
             phonesList.setText(mobilePhonesList);
         }
-        catch (DaoException e) { phonesList.setText("Unexpected error occurred"); }
+        catch (Exception e) { phonesList.setText("Unexpected error occurred"); }
     }
 
     @FXML
     protected void filter() {
         try {
             String mobilePhonesList = "";
-            List<MobilePhone> mobilePhones = dmpi.findByFilter((p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()), Double.parseDouble(priceField.getText()));
-            for (MobilePhone phone : mobilePhones) mobilePhonesList += phone.getId() + ". " + dbi.getById(phone.getBrandId()).getName() + " " + phone.getModel() + "\n";
+            List<MobilePhone> mobilePhones;
+
+            if (priceField.getText().isEmpty()) mobilePhones = dmpi.getAll();
+            else mobilePhones = dmpi.findByFilter((p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()), Double.parseDouble(priceField.getText()));
+
+            for (MobilePhone phone : mobilePhones) mobilePhonesList += phone.getId() + ". " + dbi.getById(phone.getBrandId()).getName() + " " + phone.getModel() + " ( $" + phone.getPrice() + " )" + "\n";
             phonesList.setText(mobilePhonesList);
         }
-        catch (DaoException e) { phonesList.setText("Unexpected error occurred"); }
+        catch (Exception e) { phonesList.setText("Unexpected error occurred"); }
     }
 
     @FXML
     protected void goBack() throws IOException {
-        FXMLLoader newMenu = new FXMLLoader(getClass().getResource("/group4/group4/menu/phonesMenu.fxml"));
         Stage stage = (Stage) phonesList.getScene().getWindow();
-        stage.setScene(new Scene(newMenu.load()));
+        stage.setScene(new Scene(new FXMLLoader(getClass().getResource("/group4/group4/menu/phonesMenu.fxml")).load()));
         stage.show();
     }
 }

@@ -1,6 +1,5 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
-import group4.group4.Exceptions.DaoException;
 import group4.group4.server.dao.DaoBrandImpl;
 import group4.group4.server.dto.MobilePhone;
 import javafx.fxml.FXML;
@@ -27,17 +26,19 @@ public class DAPController implements Initializable {
         try {
             String mobilePhonesList = "";
             List<MobilePhone> mobilePhones = dmpi.getAll();
-            for (MobilePhone phone : mobilePhones) mobilePhonesList += phone.getId() + ". " + dbi.getById(phone.getBrandId()).getName() + " " + phone.getModel() + "\n";
+
+            if (mobilePhones.isEmpty()) mobilePhonesList = "Currently there is no any phones in the database";
+            else for (MobilePhone phone : mobilePhones) mobilePhonesList += phone.getId() + ". " + dbi.getById(phone.getBrandId()).getName() + " " + phone.getModel() + "\n";
+
             phonesList.setText(mobilePhonesList);
         }
-        catch (DaoException e) { phonesList.setText("Unexpected error occurred"); }
+        catch (Exception e) { phonesList.setText("Unexpected error occurred"); }
     }
 
     @FXML
     protected void goBack() throws IOException {
-        FXMLLoader newMenu = new FXMLLoader(getClass().getResource("/group4/group4/menu/phonesMenu.fxml"));
         Stage stage = (Stage) phonesList.getScene().getWindow();
-        stage.setScene(new Scene(newMenu.load()));
+        stage.setScene(new Scene(new FXMLLoader(getClass().getResource("/group4/group4/menu/phonesMenu.fxml")).load()));
         stage.show();
     }
 }

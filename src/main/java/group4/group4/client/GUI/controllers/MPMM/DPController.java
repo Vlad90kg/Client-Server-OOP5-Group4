@@ -1,6 +1,6 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
-import group4.group4.Exceptions.DaoException;
+import group4.group4.server.dao.DaoBrandImpl;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -19,18 +19,14 @@ public class DPController {
 
     @FXML
     protected void delete() {
-        try {
-            int result = dmpi.delete(Integer.parseInt(idField.getText()));
-            resultMessage.setText((result == 1) ? "Successfully deleted phone with specified ID" : "Mobile phone with specified ID not found");
-        }
-        catch (DaoException e) { resultMessage.setText("Unexpected error occurred"); }
+        try { resultMessage.setText((dmpi.delete(Integer.parseInt(idField.getText())) == 1) ? "Successfully deleted mobile phone" : "Could not find any mobile phone with specified ID"); }
+        catch (Exception e) { resultMessage.setText("Unexpected error occurred"); }
     }
 
     @FXML
     protected void goBack() throws IOException {
-        FXMLLoader newMenu = new FXMLLoader(getClass().getResource("/group4/group4/menu/phonesMenu.fxml"));
         Stage stage = (Stage) resultMessage.getScene().getWindow();
-        stage.setScene(new Scene(newMenu.load()));
+        stage.setScene(new Scene(new FXMLLoader(getClass().getResource("/group4/group4/menu/phonesMenu.fxml")).load()));
         stage.show();
     }
 }

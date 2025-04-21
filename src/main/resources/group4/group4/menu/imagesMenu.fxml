@@ -6,21 +6,41 @@
 
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" spacing="25.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group4.group4.client.GUI.controllers.MPMM.DIController">
     <children>
-        <Label text="Download image from server">
+        <Label text="Download Image From Server">
             <font>
                 <Font name="Arial Bold" size="24.0" />
             </font></Label>
         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="640.0" spacing="15.0">
             <children>
-                  <Button mnemonicParsing="false" onAction="#goToList" text="Display available images" />
+                  <Button mnemonicParsing="false" onAction="#goToList" text="Display Available Images">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font></Button>
             <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0" spacing="15.0">
                <children>
-                  <TextField promptText="Enter file name" fx:id="fileName" />
-                        <Button mnemonicParsing="false" onAction="#downloadFromServer" text="Download specified image from server" />
+                  <TextField fx:id="fileName" promptText="e.g. name.jpg">
+                     <font>
+                        <Font name="Arial" size="13.0" />
+                     </font></TextField>
+                        <Button mnemonicParsing="false" onAction="#downloadFromServer" text="Download Specified Image From Server">
+                     <font>
+                        <Font name="Arial" size="13.0" />
+                     </font></Button>
                </children>
             </HBox>
-                  <Button mnemonicParsing="false" onAction="#downloadAll" text="Download all images" />
-                  <Button mnemonicParsing="false" onAction="#goBack" text="Back to mobile phones management menu" />
+                  <Button mnemonicParsing="false" onAction="#downloadAll" text="Download All Images">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font></Button>
+            <Label fx:id="message">
+               <font>
+                  <Font name="Arial" size="16.0" />
+               </font>
+            </Label>
+                  <Button mnemonicParsing="false" onAction="#goBack" text="Back to Mobile Phone Management Menu">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font></Button>
             </children>
         </VBox>
     </children>

@@ -1,6 +1,5 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
-import group4.group4.Exceptions.DaoException;
 import group4.group4.server.dao.DaoBrandImpl;
 import group4.group4.server.dto.MobilePhone;
 import javafx.fxml.FXML;
@@ -17,15 +16,20 @@ import javafx.stage.Stage;
 public class SPController {
     @FXML private final DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl();
     @FXML private final DaoBrandImpl dbi = new DaoBrandImpl();
-    @FXML private Label brand, model, quantity, price, storage, chipset;
+    @FXML private Label brand, model, quantity, price, storage, chipset, message;
     @FXML private TextField idField;
 
     @FXML
     protected void find() {
         try {
-            int idToFind = Integer.parseInt(idField.getText());
-            MobilePhone foundPhone = dmpi.getById(idToFind);
+            MobilePhone foundPhone = dmpi.getById(Integer.parseInt(idField.getText()));
 
+            if (foundPhone == null) {
+                message.setText("Could not find any mobile phone with specified ID");
+                return;
+            }
+
+            message.setText("");
             brand.setText("Brand: " + dbi.getById(foundPhone.getBrandId()).getName());
             model.setText("Model: " + foundPhone.getModel());
             quantity.setText("Quantity: " + foundPhone.getQuantity());
@@ -33,14 +37,13 @@ public class SPController {
             storage.setText("Storage: " + foundPhone.getSpecifications().getStorage());
             chipset.setText("Chipset: " + foundPhone.getSpecifications().getChipset());
         }
-        catch (DaoException e) { idField.setText("Unexpected error occurred"); }
+        catch (Exception e) { message.setText("Unexpected error occurred"); }
     }
 
     @FXML
     protected void goBack() throws IOException {
-        FXMLLoader newMenu = new FXMLLoader(getClass().getResource("/group4/group4/menu/phonesMenu.fxml"));
         Stage stage = (Stage) brand.getScene().getWindow();
-        stage.setScene(new Scene(newMenu.load()));
+        stage.setScene(new Scene(new FXMLLoader(getClass().getResource("/group4/group4/menu/phonesMenu.fxml")).load()));
         stage.show();
     }
 }

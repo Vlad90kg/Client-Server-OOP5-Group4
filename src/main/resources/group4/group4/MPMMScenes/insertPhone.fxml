@@ -6,10 +6,14 @@
 
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" spacing="25.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group4.group4.client.GUI.controllers.MPMM.IPController">
     <children>
-        <Label text="Insert phone">
+        <Label text="Add New Mobile Phone">
             <font>
                 <Font name="Arial Bold" size="24.0" />
             </font></Label>
+      <Label>
+         <font>
+            <Font name="Arial" size="16.0" />
+         </font></Label>
         <HBox prefHeight="100.0" prefWidth="200.0">
             <children>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="320.0" spacing="15.0">
@@ -21,7 +25,16 @@
                                       <Font name="Arial" size="16.0" />
                                   </font>
                               </Label>
-                        <TextField fx:id="brandField" />
+                         <TextField fx:id="brandField" focusTraversable="false" onKeyTyped="#handleBrandFieldUpdate" prefHeight="25.0" prefWidth="50.0" promptText="e.g. 1">
+                             <font>
+                                 <Font name="Arial" size="13.0" />
+                             </font>
+                         </TextField>
+                        <Label fx:id="brandName" text="N/A">
+                           <font>
+                              <Font name="Arial" size="16.0" />
+                           </font>
+                        </Label>
                      </children>
                   </HBox>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
@@ -31,7 +44,11 @@
                                         <Font name="Arial" size="16.0" />
                                     </font>
                                 </Label>
-                                <TextField fx:id="modelField" />
+                                <TextField fx:id="modelField" focusTraversable="false" promptText="e.g. iPhone 16 Pro Max">
+                                    <font>
+                                        <Font name="Arial" size="13.0" />
+                                    </font>
+                                </TextField>
                             </children>
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
@@ -41,21 +58,29 @@
                                         <Font name="Arial" size="16.0" />
                                     </font>
                                 </Label>
-                                <TextField fx:id="quantityField" />
+                                <TextField fx:id="quantityField" focusTraversable="false" promptText="e.g. 500">
+                                    <font>
+                                        <Font name="Arial" size="13.0" />
+                                    </font>
+                                </TextField>
                             </children>
                         </HBox>
                     </children>
                 </VBox>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="320.0" spacing="15.0">
                     <children>
-                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                             <children>
-                                <Label text="Price:">
+                                <Label text="Price: $">
                                     <font>
                                         <Font name="Arial" size="16.0" />
                                     </font>
                                 </Label>
-                                <TextField fx:id="priceField" />
+                                <TextField fx:id="priceField" focusTraversable="false" promptText="e.g. 1989.99">
+                                    <font>
+                                        <Font name="Arial" size="13.0" />
+                                    </font>
+                                </TextField>
                             </children>
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
@@ -65,7 +90,10 @@
                                         <Font name="Arial" size="16.0" />
                                     </font>
                                 </Label>
-                                <TextField fx:id="storageField" />
+                                <TextField fx:id="storageField" focusTraversable="false" promptText="e.g. 1TB">
+                           <font>
+                              <Font name="Arial" size="13.0" />
+                           </font></TextField>
                             </children>
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
@@ -75,17 +103,30 @@
                                         <Font name="Arial" size="16.0" />
                                     </font>
                                 </Label>
-                                <TextField fx:id="chipsetField" />
+                                <TextField fx:id="chipsetField" focusTraversable="false" promptText="e.g. A18 Bionic">
+                           <font>
+                              <Font name="Arial" size="13.0" />
+                           </font></TextField>
                             </children>
                         </HBox>
                     </children>
                 </VBox>
             </children>
         </HBox>
+      <Label fx:id="message">
+         <font>
+            <Font name="Arial" size="16.0" />
+         </font></Label>
         <HBox alignment="CENTER" prefHeight="35.0" prefWidth="640.0" spacing="25.0">
             <children>
-                <Button mnemonicParsing="false" onAction="#insert" text="Insert" />
-              <Button mnemonicParsing="false" onAction="#goBack" text="Go back" />
+                <Button mnemonicParsing="false" onAction="#insert" text="Add">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font></Button>
+              <Button mnemonicParsing="false" onAction="#goBack" text="Go Back">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font></Button>
             </children>
         </HBox>
     </children>

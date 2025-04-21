@@ -3,6 +3,7 @@ package group4.group4.client.GUI.controllers.MPMM;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -12,11 +13,20 @@ import java.util.zip.ZipOutputStream;
 
 public class DIController {
     @FXML private TextField fileName;
+    @FXML private Label message;
 
     @FXML
     protected void downloadFromServer() {
-        String sourcePath = "images/" + fileName.getText().trim();
-        File file = new File(sourcePath);
+        File file = new File("images/" + fileName.getText().trim());
+
+        if (fileName.getText().trim().isEmpty()) {
+            message.setText("Please specify file");
+            return;
+        }
+        else if (!file.exists() || !file.isFile()) {
+            message.setText("Could not find specified image");
+            return;
+        }
 
         try (FileInputStream fis = new FileInputStream(file);
              BufferedInputStream bis = new BufferedInputStream(fis)) {
@@ -31,7 +41,10 @@ public class DIController {
             File destFile = new File(destPath);
 
             destFile.getParentFile().mkdirs();
-            try (FileOutputStream fos = new FileOutputStream(destFile)) { fos.write(receivedData); }
+            try (FileOutputStream fos = new FileOutputStream(destFile)) {
+                fos.write(receivedData);
+                message.setText("Successfully downloaded specified image");
+            }
         }
         catch (IOException e) { System.out.println("Error during file transfer: " + e.getMessage()); }
     }
@@ -43,6 +56,8 @@ public class DIController {
         File[] files = sourceDir.listFiles();
         String zipFileName = "downloads/images.zip";
         File zipFile = new File(zipFileName);
+
+        if (sourceDir.list() != null && sourceDir.list().length == 0) message.setText("Currently there is no any images in the server");
 
         File downloadsDir = new File("downloads");
         if (!downloadsDir.exists()) downloadsDir.mkdirs();
@@ -59,6 +74,8 @@ public class DIController {
                     int bytesRead;
                     while ((bytesRead = bis.read(buffer)) != -1) zos.write(buffer, 0, bytesRead);
                     zos.closeEntry();
+
+                    message.setText("Successfully downloaded .zip archive consisting all images");
                 }
                 catch (IOException e) { System.out.println("Error processing file " + file.getName() + ": " + e.getMessage()); }
             }

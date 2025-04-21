@@ -14,17 +14,38 @@
          <children>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="25.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#displayAllPhones" text="Display all phones" />
-                  <Button mnemonicParsing="false" onAction="#searchPhone" text="Search phone by ID" />
-                   <Button mnemonicParsing="false" onAction="#deletePhone" text="Delete phone by ID" />
-                   <Button mnemonicParsing="false" onAction="#insertPhone" text="Insert phone" />
+                  <Button mnemonicParsing="false" onAction="#displayAllPhones" text="Show All Phones">
+                     <font>
+                        <Font name="Arial" size="13.0" />
+                     </font></Button>
+                  <Button mnemonicParsing="false" onAction="#searchPhone" text="Find Phone by ID">
+                     <font>
+                        <Font name="Arial" size="13.0" />
+                     </font></Button>
+                   <Button mnemonicParsing="false" onAction="#deletePhone" text="Delete Phone by ID">
+                     <font>
+                        <Font name="Arial" size="13.0" />
+                     </font></Button>
+                   <Button mnemonicParsing="false" onAction="#insertPhone" text="Add New Phone">
+                     <font>
+                        <Font name="Arial" size="13.0" />
+                     </font></Button>
                </children>
             </HBox>
              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="25.0">
                  <children>
-                     <Button mnemonicParsing="false" onAction="#filterPhones" text="Filter phones by price" />
-                     <Button mnemonicParsing="false" onAction="#downloadImage" text="Download image from server" />
-                     <Button mnemonicParsing="false" onAction="#toMainMenu" text="Back to main menu" />
+                     <Button mnemonicParsing="false" onAction="#filterPhones" text="Filter Phones by Price">
+                     <font>
+                        <Font name="Arial" size="13.0" />
+                     </font></Button>
+                     <Button mnemonicParsing="false" onAction="#downloadImage" text="Download Image From Server">
+                     <font>
+                        <Font name="Arial" size="13.0" />
+                     </font></Button>
+                     <Button mnemonicParsing="false" onAction="#toMainMenu" text="Back to Main Menu">
+                     <font>
+                        <Font name="Arial" size="13.0" />
+                     </font></Button>
                  </children>
              </HBox>
          </children>
