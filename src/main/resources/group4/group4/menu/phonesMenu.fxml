@@ -23,7 +23,7 @@
              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="25.0">
                  <children>
                      <Button mnemonicParsing="false" onAction="#filterPhones" text="Filter phones by price" />
-                     <Button mnemonicParsing="false" text="Download image from server" />
+                     <Button mnemonicParsing="false" onAction="#downloadImage" text="Download image from server" />
                      <Button mnemonicParsing="false" onAction="#toMainMenu" text="Back to main menu" />
                  </children>
              </HBox>

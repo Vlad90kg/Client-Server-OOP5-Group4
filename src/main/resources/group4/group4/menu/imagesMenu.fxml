@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" spacing="25.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group4.group4.client.GUI.controllers.MPMM.DIController">
+    <children>
+        <Label fx:id="titleText" text="Download image from server">
+            <font>
+                <Font name="Arial Bold" size="24.0" />
+            </font></Label>
+        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="640.0" spacing="15.0">
+            <children>
+                  <Button mnemonicParsing="false" onAction="#goToList" text="Display available images" />
+            <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0" spacing="15.0">
+               <children>
+                  <TextField promptText="Enter file name" />
+                        <Button mnemonicParsing="false" text="Download specified image" />
+               </children>
+            </HBox>
+                  <Button mnemonicParsing="false" text="Download all images" />
+                  <Button mnemonicParsing="false" onAction="#goBack" text="Back to mobile phones management menu" />
+            </children>
+        </VBox>
+    </children>
+</VBox>
