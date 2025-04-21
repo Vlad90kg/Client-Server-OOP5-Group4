@@ -14,7 +14,7 @@
         <HBox alignment="CENTER" prefHeight="35.0" prefWidth="640.0" spacing="25.0">
             <children>
                 <TextField fx:id="idField" promptText="Enter ID" />
-                <Button mnemonicParsing="false" onAction="#find" text="Delete" />
+                <Button mnemonicParsing="false" onAction="#delete" text="Delete" />
             </children>
         </HBox>
         <Button mnemonicParsing="false" onAction="#goBack" text="Go back" />

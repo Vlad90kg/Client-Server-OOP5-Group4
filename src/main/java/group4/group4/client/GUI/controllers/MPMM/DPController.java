@@ -18,7 +18,7 @@ public class DPController {
     @FXML private TextField idField;
 
     @FXML
-    protected void find() {
+    protected void delete() {
         try {
             int result = dmpi.delete(Integer.parseInt(idField.getText()));
             resultMessage.setText((result == 1) ? "Successfully deleted phone with specified ID" : "Mobile phone with specified ID not found");

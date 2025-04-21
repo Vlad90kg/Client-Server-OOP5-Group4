@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" spacing="25.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group4.group4.client.GUI.controllers.MPMM.IPController">
+    <children>
+        <Label text="Insert phone">
+            <font>
+                <Font name="Arial Bold" size="24.0" />
+            </font></Label>
+        <HBox prefHeight="100.0" prefWidth="200.0">
+            <children>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="320.0" spacing="15.0">
+                    <children>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                     <children>
+                              <Label text="Brand:">
+                                  <font>
+                                      <Font name="Arial" size="16.0" />
+                                  </font>
+                              </Label>
+                        <TextField fx:id="brandField" />
+                     </children>
+                  </HBox>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                            <children>
+                                <Label text="Model:">
+                                    <font>
+                                        <Font name="Arial" size="16.0" />
+                                    </font>
+                                </Label>
+                                <TextField fx:id="modelField" />
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                            <children>
+                                <Label text="Quantity:">
+                                    <font>
+                                        <Font name="Arial" size="16.0" />
+                                    </font>
+                                </Label>
+                                <TextField fx:id="quantityField" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="320.0" spacing="15.0">
+                    <children>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                            <children>
+                                <Label text="Price:">
+                                    <font>
+                                        <Font name="Arial" size="16.0" />
+                                    </font>
+                                </Label>
+                                <TextField fx:id="priceField" />
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                            <children>
+                                <Label text="Storage:">
+                                    <font>
+                                        <Font name="Arial" size="16.0" />
+                                    </font>
+                                </Label>
+                                <TextField fx:id="storageField" />
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                            <children>
+                                <Label text="Chipset:">
+                                    <font>
+                                        <Font name="Arial" size="16.0" />
+                                    </font>
+                                </Label>
+                                <TextField fx:id="chipsetField" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+        <HBox alignment="CENTER" prefHeight="35.0" prefWidth="640.0" spacing="25.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#insert" text="Insert" />
+              <Button mnemonicParsing="false" onAction="#goBack" text="Go back" />
+            </children>
+        </HBox>
+    </children>
+</VBox>
