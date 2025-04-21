@@ -16,4 +16,6 @@ module group.group {
     opens group4.group4.client.GUI to javafx.fxml;
     exports group4.group4.client;
     opens group4.group4.client to javafx.fxml;
+    exports group4.group4.client.GUI.controllers.MPMM;
+    opens group4.group4.client.GUI.controllers.MPMM to javafx.fxml;
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" spacing="25.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group4.group4.client.GUI.controllers.MPMM.DAPController">
+    <children>
+        <Label fx:id="titleText" text="Display all phones">
+            <font>
+                <Font name="Arial Bold" size="24.0" />
+            </font></Label>
+        <ScrollPane xmlns:fx="http://javafx.com/fxml" prefHeight="200.0" prefWidth="320.0" fitToWidth="true">
+        <VBox alignment="CENTER" spacing="15.0">
+         <children>
+            <Label fx:id="phonesList">
+               <font>
+                  <Font name="Arial" size="16.0" />
+               </font></Label>
+         </children></VBox>
+        </ScrollPane>
+        <Button mnemonicParsing="false" onAction="#goBack" text="Go back" />
+    </children>
+</VBox>
