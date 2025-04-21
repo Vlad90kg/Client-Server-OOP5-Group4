@@ -7,6 +7,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class DIController {
     @FXML private TextField fileName;
@@ -32,6 +34,36 @@ public class DIController {
             try (FileOutputStream fos = new FileOutputStream(destFile)) { fos.write(receivedData); }
         }
         catch (IOException e) { System.out.println("Error during file transfer: " + e.getMessage()); }
+    }
+
+    @FXML
+    protected void downloadAll() {
+        String sourceDirPath = "images/";
+        File sourceDir = new File(sourceDirPath);
+        File[] files = sourceDir.listFiles();
+        String zipFileName = "downloads/images.zip";
+        File zipFile = new File(zipFileName);
+
+        File downloadsDir = new File("downloads");
+        if (!downloadsDir.exists()) downloadsDir.mkdirs();
+
+        try (FileOutputStream fos = new FileOutputStream(zipFile);
+             ZipOutputStream zos = new ZipOutputStream(fos)) {
+            for (File file : files) {
+                try (FileInputStream fis = new FileInputStream(file);
+                     BufferedInputStream bis = new BufferedInputStream(fis)) {
+                    ZipEntry entry = new ZipEntry(file.getName());
+                    zos.putNextEntry(entry);
+
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = bis.read(buffer)) != -1) zos.write(buffer, 0, bytesRead);
+                    zos.closeEntry();
+                }
+                catch (IOException e) { System.out.println("Error processing file " + file.getName() + ": " + e.getMessage()); }
+            }
+        }
+        catch (IOException e) { System.out.println("Error creating zip file: " + e.getMessage()); }
     }
 
     @FXML

@@ -19,7 +19,7 @@
                         <Button mnemonicParsing="false" onAction="#downloadFromServer" text="Download specified image from server" />
                </children>
             </HBox>
-                  <Button mnemonicParsing="false" text="Download all images" />
+                  <Button mnemonicParsing="false" onAction="#downloadAll" text="Download all images" />
                   <Button mnemonicParsing="false" onAction="#goBack" text="Back to mobile phones management menu" />
             </children>
         </VBox>
