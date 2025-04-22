@@ -22,6 +22,11 @@ public class SPController {
     @FXML
     protected void find() {
         try {
+            if (idField.getText().isEmpty()) {
+                message.setText("Please specify ID");
+                return;
+            }
+
             MobilePhone foundPhone = dmpi.getById(Integer.parseInt(idField.getText()));
 
             if (foundPhone == null) {
@@ -37,6 +42,7 @@ public class SPController {
             storage.setText("Storage: " + foundPhone.getSpecifications().getStorage());
             chipset.setText("Chipset: " + foundPhone.getSpecifications().getChipset());
         }
+        catch (NumberFormatException e) { message.setText("ID must be a number"); }
         catch (Exception e) { message.setText("Unexpected error occurred"); }
     }
 

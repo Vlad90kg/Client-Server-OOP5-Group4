@@ -1,6 +1,7 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
 import group4.group4.server.dao.DaoBrandImpl;
+import group4.group4.server.dto.MobilePhone;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,12 +15,30 @@ import javafx.stage.Stage;
 
 public class DPController {
     @FXML private final DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl();
+    @FXML private final DaoBrandImpl dbi = new DaoBrandImpl();
     @FXML private Label resultMessage;
     @FXML private TextField idField;
 
     @FXML
     protected void delete() {
-        try { resultMessage.setText((dmpi.delete(Integer.parseInt(idField.getText())) == 1) ? "Successfully deleted mobile phone" : "Could not find any mobile phone with specified ID"); }
+        try {
+            if (idField.getText().isEmpty()) {
+                resultMessage.setText("Please specify ID");
+                return;
+            }
+
+            MobilePhone phoneToDelete = dmpi.getById(Integer.parseInt(idField.getText()));
+
+            if (phoneToDelete == null) {
+                resultMessage.setText("Could not find any mobile phone with specified ID");
+                return;
+            }
+
+            String deletedPhoneName = dbi.getById(phoneToDelete.getBrandId()).getName() + " " + phoneToDelete.getModel();
+            dmpi.delete(Integer.parseInt(idField.getText()));
+            resultMessage.setText("Successfully deleted " + deletedPhoneName);
+        }
+        catch (NumberFormatException e) { resultMessage.setText("ID must be a number"); }
         catch (Exception e) { resultMessage.setText("Unexpected error occurred"); }
     }
 

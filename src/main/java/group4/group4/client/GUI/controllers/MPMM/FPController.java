@@ -46,6 +46,7 @@ public class FPController implements Initializable {
             for (MobilePhone phone : mobilePhones) mobilePhonesList += phone.getId() + ". " + dbi.getById(phone.getBrandId()).getName() + " " + phone.getModel() + " ( $" + phone.getPrice() + " )" + "\n";
             phonesList.setText(mobilePhonesList);
         }
+        catch (NumberFormatException e) { phonesList.setText("Price must be a number"); }
         catch (Exception e) { phonesList.setText("Unexpected error occurred"); }
     }
 
