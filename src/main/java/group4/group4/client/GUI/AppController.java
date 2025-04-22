@@ -46,6 +46,9 @@ public class AppController {
             case 21:
                 newScene = new FXMLLoader(getClass().getResource("/group4/group4/PBMMScenes/displayAllBrands.fxml"));
                 break;
+            case 22:
+                newScene = new FXMLLoader(getClass().getResource("/group4/group4/PBMMScenes/searchBrand.fxml"));
+                break;
             default:
                 System.out.println("Invalid option passed to optionHandler() in AppController.java");
                 break;
@@ -72,4 +75,5 @@ public class AppController {
 
     // Phone Brands Management Menu
     @FXML protected void displayAllBrands() throws IOException { optionHandler(21); }
+    @FXML protected void searchBrand() throws IOException { optionHandler(22); }
 }
