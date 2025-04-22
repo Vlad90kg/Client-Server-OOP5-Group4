@@ -24,6 +24,18 @@ public class IPController {
     @FXML
     protected void insert() {
         try {
+            if (
+                    brandField.getText().isEmpty() ||
+                    modelField.getText().isEmpty() ||
+                    quantityField.getText().isEmpty() ||
+                    priceField.getText().isEmpty() ||
+                    storageField.getText().isEmpty() ||
+                    chipsetField.getText().isEmpty()
+            ) {
+                message.setText("Fields cannot not be empty");
+                return;
+            }
+
             dmpi.insert(new MobilePhone(
                     new Specifications(storageField.getText(), chipsetField.getText()),
                     Integer.parseInt(brandField.getText()),
@@ -34,6 +46,7 @@ public class IPController {
 
             message.setText("Successfully added new mobile phone");
         }
+        catch (NumberFormatException e) { message.setText("Brand ID, Quantity, or Price is not a number"); }
         catch (Exception e) { message.setText("Unexpected error occurred. Please check fields"); }
     }
 

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" spacing="25.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group4.group4.client.GUI.controllers.PBMM.IBController">
+    <children>
+        <Label text="Add New Brand">
+            <font>
+                <Font name="Arial Bold" size="24.0" />
+            </font></Label>
+      <Label>
+         <font>
+            <Font name="Arial" size="16.0" />
+         </font></Label>
+        <HBox prefHeight="100.0" prefWidth="200.0">
+            <children>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="320.0" spacing="15.0">
+                    <children>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                            <children>
+                                <Label text="Name:">
+                                    <font>
+                                        <Font name="Arial" size="16.0" />
+                                    </font>
+                                </Label>
+                                <TextField fx:id="nameField" focusTraversable="false" promptText="e.g. Apple">
+                                    <font>
+                                        <Font name="Arial" size="13.0" />
+                                    </font>
+                                </TextField>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="320.0" spacing="15.0">
+                    <children>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                            <children>
+                                <Label text="Description:">
+                                    <font>
+                                        <Font name="Arial" size="16.0" />
+                                    </font>
+                                </Label>
+                                <TextField fx:id="descriptionField" focusTraversable="false" promptText="e.g. Apple Inc.">
+                           <font>
+                              <Font name="Arial" size="13.0" />
+                           </font></TextField>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+      <Label fx:id="message">
+         <font>
+            <Font name="Arial" size="16.0" />
+         </font></Label>
+        <HBox alignment="CENTER" prefHeight="35.0" prefWidth="640.0" spacing="25.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#insert" text="Add">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font></Button>
+              <Button mnemonicParsing="false" onAction="#goBack" text="Go Back">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font></Button>
+            </children>
+        </HBox>
+    </children>
+</VBox>
