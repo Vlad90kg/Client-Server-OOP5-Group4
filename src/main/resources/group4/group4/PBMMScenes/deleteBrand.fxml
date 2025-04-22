@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" spacing="25.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group4.group4.client.GUI.controllers.PBMM.DBController">
+    <children>
+        <Label text="Delete Brand">
+            <font>
+                <Font name="Arial Bold" size="24.0" />
+            </font></Label>
+      <Label fx:id="resultMessage" textAlignment="CENTER">
+         <font>
+            <Font name="Arial" size="16.0" />
+         </font></Label>
+        <HBox alignment="CENTER" prefHeight="35.0" prefWidth="640.0" spacing="15.0">
+            <children>
+                <TextField fx:id="idField" focusTraversable="false" promptText="Enter ID">
+                    <font>
+                        <Font name="Arial" size="13.0" />
+                    </font>
+                </TextField>
+                <Button mnemonicParsing="false" onAction="#delete" text="Delete">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font></Button>
+            </children>
+        </HBox>
+        <Button mnemonicParsing="false" onAction="#goBack" text="Go Back">
+         <font>
+            <Font name="Arial" size="13.0" />
+         </font></Button>
+    </children>
+</VBox>

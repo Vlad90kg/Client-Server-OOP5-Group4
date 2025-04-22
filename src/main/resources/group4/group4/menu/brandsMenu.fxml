@@ -21,7 +21,7 @@
                   <font>
                      <Font name="Arial" size="13.0" />
                   </font></Button>
-               <Button mnemonicParsing="false" text="Delete Brand by ID">
+               <Button mnemonicParsing="false" onAction="#deleteBrand" text="Delete Brand by ID">
                   <font>
                      <Font name="Arial" size="13.0" />
                   </font></Button>
