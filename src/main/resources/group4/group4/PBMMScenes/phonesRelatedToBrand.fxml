@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" spacing="25.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group4.group4.client.GUI.controllers.PBMM.PRTBController">
+    <children>
+        <Label text="Phones of Specific Brand">
+            <font>
+                <Font name="Arial Bold" size="24.0" />
+            </font></Label>
+        <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="320.0" style="-fx-background-color: transparent;" xmlns:fx="http://javafx.com/fxml">
+            <VBox alignment="CENTER" spacing="15.0">
+                <children>
+                    <Label fx:id="phonesList">
+                        <font>
+                            <Font name="Arial" size="16.0" />
+                        </font></Label>
+                </children></VBox>
+        </ScrollPane>
+      <HBox alignment="CENTER" prefHeight="35.0" prefWidth="640.0" spacing="15.0">
+         <children>
+            <Label fx:id="brandName" text="N/A">
+               <font>
+                  <Font name="Arial" size="16.0" />
+               </font>
+            </Label>
+            <TextField fx:id="brandField" onKeyTyped="#handleBrandFieldUpdate" focusTraversable="false" prefHeight="24.0" prefWidth="105.0" promptText="Enter brand ID">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font></TextField>
+            <Button mnemonicParsing="false" onAction="#filter" text="View">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+        <Button mnemonicParsing="false" onAction="#goBack" text="Go Back">
+         <font>
+            <Font name="Arial" size="13.0" />
+         </font></Button>
+    </children>
+</VBox>

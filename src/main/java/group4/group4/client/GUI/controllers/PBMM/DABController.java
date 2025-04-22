@@ -24,7 +24,7 @@ public class DABController implements Initializable {
             String brandsListString = "";
             List<Brand> brands = dbi.getAll();
 
-            if (brands.isEmpty()) brandsListString = "Currently there is no any brands in the database";
+            if (brands.isEmpty()) brandsListString = "There is currently no any brands in the database";
             else for (Brand brand : brands) brandsListString += brand.getId() + ". " + brand.getName() + "\n";
 
             brandsList.setText(brandsListString);

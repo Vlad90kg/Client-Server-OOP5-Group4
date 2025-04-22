@@ -27,7 +27,7 @@ public class DAPController implements Initializable {
             String mobilePhonesList = "";
             List<MobilePhone> mobilePhones = dmpi.getAll();
 
-            if (mobilePhones.isEmpty()) mobilePhonesList = "Currently there is no any phones in the database";
+            if (mobilePhones.isEmpty()) mobilePhonesList = "There is currently no any phones in the database";
             else for (MobilePhone phone : mobilePhones) mobilePhonesList += phone.getId() + ". " + dbi.getById(phone.getBrandId()).getName() + " " + phone.getModel() + "\n";
 
             phonesList.setText(mobilePhonesList);

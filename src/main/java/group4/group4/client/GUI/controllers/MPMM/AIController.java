@@ -22,7 +22,7 @@ public class AIController implements Initializable {
         File dir = new File("images");
         File[] files = dir.listFiles();
 
-        if (dir.list() != null && dir.list().length == 0) listOfImages = "Currently there is no any images in the server";
+        if (dir.list() != null && dir.list().length == 0) listOfImages = "There is currently no any images in the server";
         else for (int i = 0; i < files.length; i++) listOfImages += (i + 1) + ". " + files[i].getName() + "\n";
 
         imagesList.setText(listOfImages);

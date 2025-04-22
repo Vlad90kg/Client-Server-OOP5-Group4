@@ -57,7 +57,7 @@ public class DIController {
         String zipFileName = "downloads/images.zip";
         File zipFile = new File(zipFileName);
 
-        if (sourceDir.list() != null && sourceDir.list().length == 0) message.setText("Currently there is no any images in the server");
+        if (sourceDir.list() != null && sourceDir.list().length == 0) message.setText("There is currently no any images in the server");
 
         File downloadsDir = new File("downloads");
         if (!downloadsDir.exists()) downloadsDir.mkdirs();
