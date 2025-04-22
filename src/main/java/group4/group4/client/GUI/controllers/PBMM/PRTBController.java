@@ -41,7 +41,11 @@ public class PRTBController implements Initializable {
             }
             else {
                 mobilePhones = dmpi.getPhoneByBrand(Integer.parseInt(brandField.getText()));
-                if (mobilePhones.isEmpty()) {
+                if (dbi.getById(Integer.parseInt(brandField.getText())) == null) {
+                    phonesList.setText("This brand does not exist");
+                    return;
+                }
+                else if (mobilePhones.isEmpty()) {
                     phonesList.setText("Currently this brand has no phones");
                     return;
                 }
