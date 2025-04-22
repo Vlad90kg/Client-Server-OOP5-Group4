@@ -1,0 +1,41 @@
+package group4.group4.client.GUI.controllers.PBMM;
+
+import group4.group4.server.dao.DaoBrandImpl;
+import group4.group4.server.dto.Brand;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+
+public class DABController implements Initializable {
+    @FXML private final DaoBrandImpl dbi = new DaoBrandImpl();
+    @FXML private Label brandsList;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        try {
+            String brandsListString = "";
+            List<Brand> brands = dbi.getAll();
+
+            if (brands.isEmpty()) brandsListString = "Currently there is no any brands in the database";
+            else for (Brand brand : brands) brandsListString += brand.getId() + ". " + brand.getName() + "\n";
+
+            brandsList.setText(brandsListString);
+        }
+        catch (Exception e) { brandsList.setText("Unexpected error occurred"); }
+    }
+
+    @FXML
+    protected void goBack() throws IOException {
+        Stage stage = (Stage) brandsList.getScene().getWindow();
+        stage.setScene(new Scene(new FXMLLoader(getClass().getResource("/group4/group4/menu/brandsMenu.fxml")).load()));
+        stage.show();
+    }
+}
