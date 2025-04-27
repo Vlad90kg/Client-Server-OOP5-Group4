@@ -1,6 +1,7 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
-import group4.group4.server.dao.DaoBrandImpl;
+import group4.group4.client.GUI.ConnectionManager;
+import group4.group4.server.dto.Brand;
 import group4.group4.server.dto.MobilePhone;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,36 +10,43 @@ import javafx.scene.control.Label;
 
 import java.io.IOException;
 
-import group4.group4.server.dao.DaoMobilePhoneImpl;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 
 public class DPController {
-    @FXML private final DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl();
-    @FXML private final DaoBrandImpl dbi = new DaoBrandImpl();
     @FXML private Label resultMessage;
     @FXML private TextField idField;
 
     @FXML
     protected void delete() {
         try {
-            if (idField.getText().isEmpty()) {
+            String strId = idField.getText();
+
+            if (strId.isEmpty()) {
                 resultMessage.setText("Please specify ID");
                 return;
             }
 
-            MobilePhone phoneToDelete = dmpi.getById(Integer.parseInt(idField.getText()));
+            int intId = Integer.parseInt(strId);
+            ConnectionManager.getInstance().getOut().println("getByPhoneId." + intId);
+            String response = ConnectionManager.getInstance().getIn().readLine();
+            JSONObject jsonObject = new JSONObject(response);
+            MobilePhone phoneToDelete = new MobilePhone(jsonObject);
 
-            if (phoneToDelete == null) {
-                resultMessage.setText("Could not find any mobile phone with specified ID");
-                return;
-            }
+            ConnectionManager.getInstance().getOut().println("getBrandById." + phoneToDelete.getBrandId());
+            String res = ConnectionManager.getInstance().getIn().readLine();
+            JSONObject jsonObj = new JSONObject(res);
+            Brand foundBrand = new Brand(jsonObj);
 
-            String deletedPhoneName = dbi.getById(phoneToDelete.getBrandId()).getName() + " " + phoneToDelete.getModel();
-            dmpi.delete(Integer.parseInt(idField.getText()));
+            String deletedPhoneName = foundBrand.getName() + " " + phoneToDelete.getModel();
+
+            ConnectionManager.getInstance().getOut().println("deleteByPhoneId." + intId);
+            ConnectionManager.getInstance().getIn().readLine();
             resultMessage.setText("Successfully deleted " + deletedPhoneName);
         }
         catch (NumberFormatException e) { resultMessage.setText("ID must be a number"); }
+        catch (RuntimeException e) { resultMessage.setText("Could not find any mobile phone with specified ID"); }
         catch (Exception e) { resultMessage.setText("Unexpected error occurred"); }
     }
 

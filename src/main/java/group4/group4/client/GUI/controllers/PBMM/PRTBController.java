@@ -1,7 +1,7 @@
 package group4.group4.client.GUI.controllers.PBMM;
 
+import group4.group4.client.GUI.ConnectionManager;
 import group4.group4.server.dao.DaoBrandImpl;
-import group4.group4.server.dao.DaoMobilePhoneImpl;
 import group4.group4.server.dto.Brand;
 import group4.group4.server.dto.MobilePhone;
 import javafx.fxml.FXML;
@@ -11,14 +11,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class PRTBController implements Initializable {
-    @FXML private final DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl();
     @FXML private final DaoBrandImpl dbi = new DaoBrandImpl();
     @FXML private Label phonesList, brandName;
     @FXML private TextField brandField;
@@ -30,22 +32,46 @@ public class PRTBController implements Initializable {
     protected void filter() {
         try {
             String mobilePhonesList = "";
-            List<MobilePhone> mobilePhones;
+            List<MobilePhone> mobilePhones = new ArrayList<>();
 
             if (brandField.getText().isEmpty()) {
-                mobilePhones = dmpi.getAll();
+                ConnectionManager.getInstance().getOut().println("getAllPhone");
+                String response = ConnectionManager.getInstance().getIn().readLine();
+                JSONArray jsonArray = new JSONArray(response);
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    mobilePhones.add(new MobilePhone(jsonObject));
+                }
+
                 if (mobilePhones.isEmpty()) {
                     phonesList.setText("There is currently no any phones in the database");
                     return;
                 }
             }
             else {
-                mobilePhones = dmpi.getPhoneByBrand(Integer.parseInt(brandField.getText()));
-                if (dbi.getById(Integer.parseInt(brandField.getText())) == null) {
+                ConnectionManager.getInstance().getOut().println("getRelatedToBrandById." + Integer.parseInt(brandField.getText()));
+                String response = ConnectionManager.getInstance().getIn().readLine();
+
+                if(response.equals("Brand not found")) {
                     phonesList.setText("This brand does not exist");
                     return;
                 }
-                else if (mobilePhones.isEmpty()) {
+                else {
+                    String[] arr = response.split("/");
+
+                    JSONObject jsonObject = new JSONObject(arr[0]);
+                    Brand brand1 = new Brand(jsonObject);
+                    System.out.println(brand1);
+                    JSONArray jsonArray = new JSONArray(arr[1]);
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        jsonObject = jsonArray.getJSONObject(i);
+                        mobilePhones.add(new MobilePhone(jsonObject));
+                    }
+                }
+
+                if (mobilePhones.isEmpty()) {
                     phonesList.setText("Currently this brand has no phones");
                     return;
                 }
@@ -65,8 +91,15 @@ public class PRTBController implements Initializable {
             return;
         }
 
-        Brand foundBrand = dbi.getById(Integer.parseInt(brandField.getText()));
-        brandName.setText((foundBrand == null) ? "N/A" : foundBrand.getName());
+        try {
+            Integer.parseInt(brandField.getText());
+
+            ConnectionManager.getInstance().getOut().println("getBrandById." + brandField.getText());
+            String res = ConnectionManager.getInstance().getIn().readLine();
+            JSONObject jsonObj = new JSONObject(res);
+            Brand foundBrand = new Brand(jsonObj);
+            brandName.setText((foundBrand == null) ? "N/A" : foundBrand.getName());
+        } catch (NumberFormatException e) { brandName.setText("N/A"); }
     }
 
     @FXML

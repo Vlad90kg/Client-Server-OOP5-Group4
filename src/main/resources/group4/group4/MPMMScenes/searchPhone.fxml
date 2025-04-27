@@ -28,26 +28,16 @@
                         <Font name="Arial" size="16.0" />
                      </font>
                   </Label>
+               </children>
+            </VBox>
+                  <VBox alignment="CENTER" prefHeight="188.0" prefWidth="320.0" spacing="15.0">
+                      <children>
                   <Label fx:id="quantity" text="Quantity:">
                      <font>
                         <Font name="Arial" size="16.0" />
                      </font>
                   </Label>
-               </children>
-            </VBox>
-                  <VBox alignment="CENTER" prefHeight="188.0" prefWidth="320.0" spacing="15.0">
-                      <children>
                   <Label fx:id="price" layoutX="294.0" layoutY="153.0" text="Price:">
-                     <font>
-                        <Font name="Arial" size="16.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="storage" layoutX="294.0" layoutY="170.0" text="Storage:">
-                     <font>
-                        <Font name="Arial" size="16.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="chipset" layoutX="294.0" layoutY="188.0" text="Chipset:">
                      <font>
                         <Font name="Arial" size="16.0" />
                      </font>

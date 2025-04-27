@@ -1,6 +1,6 @@
 package group4.group4.client.GUI.controllers.PBMM;
 
-import group4.group4.Exceptions.DaoException;
+import group4.group4.client.GUI.ConnectionManager;
 import group4.group4.server.dao.DaoBrandImpl;
 import group4.group4.server.dto.Brand;
 import javafx.fxml.FXML;
@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -20,33 +21,28 @@ public class DBController {
     @FXML
     protected void delete() {
         try {
-            if (idField.getText().isEmpty()) {
+            String strId = idField.getText();
+
+            if (strId.isEmpty()) {
                 resultMessage.setText("Please specify ID");
                 return;
             }
 
-            Brand brandToDelete = dbi.getById(Integer.parseInt(idField.getText()));
-
-            if (brandToDelete == null) {
-                resultMessage.setText("Could not find any brand with specified ID");
-                return;
-            }
+            int intId = Integer.parseInt(strId);
+            ConnectionManager.getInstance().getOut().println("getBrandById." + intId);
+            String response = ConnectionManager.getInstance().getIn().readLine();
+            JSONObject jsonObject = new JSONObject(response);
+            Brand brandToDelete = new Brand(jsonObject);
 
             String deletedBrandName = brandToDelete.getName();
-            dbi.delete(Integer.parseInt(idField.getText()));
+
+            ConnectionManager.getInstance().getOut().println("deleteBrandById." + intId);
+            ConnectionManager.getInstance().getIn().readLine();
             resultMessage.setText("Successfully deleted " + deletedBrandName);
         }
         catch (NumberFormatException e) { resultMessage.setText("ID must be a number"); }
-        catch (Exception e) {
-            String errorMessage = "Unexpected error occurred.";
-
-            try {
-                Brand brandToDelete = dbi.getById(Integer.parseInt(idField.getText()));
-                if (brandToDelete != null) { errorMessage += "\nMake sure all " + brandToDelete.getName() + " phones are deleted first"; }
-            } catch (DaoException ignored) {}
-
-            resultMessage.setText(errorMessage);
-        }
+        catch (RuntimeException e) { resultMessage.setText("Could not find any brand with specified ID"); }
+        catch (Exception e) { resultMessage.setText("Unexpected error occurred"); }
     }
 
     @FXML

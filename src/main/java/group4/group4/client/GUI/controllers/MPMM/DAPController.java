@@ -1,6 +1,7 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
-import group4.group4.server.dao.DaoBrandImpl;
+import group4.group4.client.GUI.ConnectionManager;
+import group4.group4.server.dto.Brand;
 import group4.group4.server.dto.MobilePhone;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,25 +11,40 @@ import javafx.scene.control.Label;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import group4.group4.server.dao.DaoMobilePhoneImpl;
 import javafx.stage.Stage;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class DAPController implements Initializable {
-    @FXML private final DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl();
-    @FXML private final DaoBrandImpl dbi = new DaoBrandImpl();
     @FXML private Label phonesList;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
             String mobilePhonesList = "";
-            List<MobilePhone> mobilePhones = dmpi.getAll();
+            ConnectionManager.getInstance().getOut().println("getAllPhone");
+            String response = ConnectionManager.getInstance().getIn().readLine();
+            JSONArray jsonArray = new JSONArray(response);
+            List<MobilePhone> mobilePhones = new ArrayList<>();
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                mobilePhones.add(new MobilePhone(jsonObject));
+            }
 
             if (mobilePhones.isEmpty()) mobilePhonesList = "There is currently no any phones in the database";
-            else for (MobilePhone phone : mobilePhones) mobilePhonesList += phone.getId() + ". " + dbi.getById(phone.getBrandId()).getName() + " " + phone.getModel() + "\n";
+            else for (MobilePhone phone : mobilePhones) {
+                ConnectionManager.getInstance().getOut().println("getBrandById." + phone.getBrandId());
+                String res = ConnectionManager.getInstance().getIn().readLine();
+                JSONObject jsonObj = new JSONObject(res);
+                Brand foundBrand = new Brand(jsonObj);
+                String brand = foundBrand.getName();
+                mobilePhonesList += phone.getId() + ". " + brand + " " + phone.getModel() + "\n";
+            }
 
             phonesList.setText(mobilePhonesList);
         }

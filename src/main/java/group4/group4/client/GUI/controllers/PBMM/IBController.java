@@ -1,13 +1,19 @@
 package group4.group4.client.GUI.controllers.PBMM;
 
+import group4.group4.client.GUI.ConnectionManager;
+import group4.group4.server.JsonConverter;
 import group4.group4.server.dao.DaoBrandImpl;
 import group4.group4.server.dto.Brand;
+import group4.group4.server.dto.MobilePhone;
+import group4.group4.server.dto.Specifications;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -24,7 +30,15 @@ public class IBController {
                 return;
             }
 
-            dbi.insert(new Brand( nameField.getText(), descriptionField.getText()));
+            Brand brandToInsert = new Brand(nameField.getText(), descriptionField.getText());
+            JsonConverter jsonConverter = new JsonConverter();
+            JSONObject brandJson = jsonConverter.serializeBrand(brandToInsert);
+            JSONArray brandJsonArray = new JSONArray();
+            brandJsonArray.put(brandJson);
+            String jsonString = brandJsonArray.toString();
+            ConnectionManager.getInstance().getOut().println("insertBrand." + jsonString);
+            ConnectionManager.getInstance().getIn().readLine();
+
             message.setText("Successfully added new brand");
         }
         catch (Exception e) { message.setText("Unexpected error occurred. Please check fields"); }

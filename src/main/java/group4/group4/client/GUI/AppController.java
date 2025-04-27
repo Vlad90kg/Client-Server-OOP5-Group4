@@ -72,7 +72,10 @@ public class AppController {
     @FXML protected void toMainMenu() throws IOException { optionHandler(0); }
     @FXML protected void toPhonesMenu() throws IOException { optionHandler(1); }
     @FXML protected void toBrandsMenu() throws IOException { optionHandler(2); }
-    @FXML protected void exitButton() { Platform.exit(); }
+    @FXML protected void exitButton() throws IOException {
+        ConnectionManager.getInstance().closeConnection();
+        Platform.exit();
+    }
 
     // Mobile Phones Management Menu
     @FXML protected void displayAllPhones() throws IOException { optionHandler(11); }

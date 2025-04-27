@@ -1,12 +1,12 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
+import group4.group4.client.GUI.ConnectionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,14 +18,16 @@ public class AIController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        String listOfImages = "";
-        File dir = new File("images");
-        File[] files = dir.listFiles();
+        try {
+            ConnectionManager.getInstance().getOut().println("getPhoneFileNames");
+            String listOfImages = "";
+            String[] response = ConnectionManager.getInstance().getIn().readLine().split(",");
 
-        if (dir.list() != null && dir.list().length == 0) listOfImages = "There is currently no any images in the server";
-        else for (int i = 0; i < files.length; i++) listOfImages += (i + 1) + ". " + files[i].getName() + "\n";
+            if (response.length == 1 && response[0].isEmpty()) listOfImages = "There is currently no any images in the server";
+            else for (int i = 0; i < response.length; i++) listOfImages += (i + 1) + ". " + response[i] + "\n";
 
-        imagesList.setText(listOfImages);
+            imagesList.setText(listOfImages);
+        } catch (Exception e) { imagesList.setText("Unexpected error occurred"); }
     }
 
     @FXML
