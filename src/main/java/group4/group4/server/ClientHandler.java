@@ -33,10 +33,9 @@ public class ClientHandler implements Runnable {
         try (
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));) {
-            DaoMobilePhone daoMobilePhone = new DaoMobilePhoneImpl();
             System.out.println("Client connected");
             JsonConverter jsonConverter = new JsonConverter();
-            String inputLine, jsonString = "", imageName = "";
+            String inputLine, jsonString = "";
 
             boolean exit = false;
             while (!exit) {
@@ -47,7 +46,6 @@ public class ClientHandler implements Runnable {
                 } else {
 
                     if (!inputLine.toLowerCase().contains("phone")) {
-                        System.out.println("lol");
 
                         exit = brandHandler(inputLine, jsonConverter,jsonString, out,in);
                     } else {
@@ -86,7 +84,6 @@ public class ClientHandler implements Runnable {
                     imageName = inputLine.substring(inputLine.indexOf('.') + 1);
                     inputLine = "getPhoneImage";
                 }
-                System.out.println(inputLine+"<<<<<<");
                 switch (inputLine) {
                     case "getAllPhone":
                         String getAllString = jsonConverter.phonesListJson(getAllPhones(daoMobilePhone));
@@ -184,7 +181,7 @@ public class ClientHandler implements Runnable {
     private boolean brandHandler(String inputLine, JsonConverter jsonConverter, String jsonString, PrintWriter out, BufferedReader in) throws DaoException {
         try{
             DaoBrandImpl daoBrand = new DaoBrandImpl();
-            JSONArray jsonArray = new JSONArray();
+            JSONArray jsonArray;
             int intArgument = 0;
             if (inputLine.startsWith("getBrandById")) {
                 intArgument = Integer.parseInt(inputLine.substring(inputLine.indexOf('.') + 1));
@@ -225,7 +222,7 @@ public class ClientHandler implements Runnable {
                         DaoMobilePhone daoMobilePhone = new DaoMobilePhoneImpl();
                         Brand brand = getBrandById(daoBrand, intArgument);
                         List<MobilePhone> phones = daoMobilePhone.getPhoneByBrand(intArgument);
-                        JSONObject brandJson = new JSONObject();
+                        JSONObject brandJson;
                         brandJson = jsonConverter.serializeBrand(brand);
                         String brandJsonString = brandJson.toString();
                         String phonesJsonString = jsonConverter.phonesListJson(phones);
@@ -316,9 +313,7 @@ public class ClientHandler implements Runnable {
     public List<Brand> getAllBrands(DaoBrand daoBrand) throws DaoException {
         // Feature 1
         List<Brand> list = daoBrand.getAll();
-        for (Brand brand : list) {
-            System.out.println(brand);
-        }
+
         return list;
     }
 
