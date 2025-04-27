@@ -45,8 +45,6 @@ public class JsonConverter {
         jsonObject.put("model", phone.getModel());
         jsonObject.put("quantity", phone.getQuantity());
         jsonObject.put("price", phone.getPrice());
-        System.out.println("getspect in converter" + phone.getSpecifications());
-        System.out.println(jsonObject);
         return jsonObject;
     }
 
