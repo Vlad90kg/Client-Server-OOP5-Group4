@@ -20,12 +20,13 @@ public class MobilePhoneMenu {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
-
-    public MobilePhoneMenu(Scanner scanner, Socket socket, PrintWriter out, BufferedReader in) {
+    private Socket dataSocket;
+    public MobilePhoneMenu(Scanner scanner, Socket socket,Socket dataSocket, PrintWriter out, BufferedReader in) {
         this.scanner = scanner;
         this.socket = socket;
         this.out = out;
         this.in = in;
+        this.dataSocket=dataSocket;
     }
 
     public void display() {
@@ -79,9 +80,9 @@ public class MobilePhoneMenu {
                         String req = "getByPhoneId." + idToFind;
                         out.println(req);
                         String res = in.readLine();
-                        if(res == null) {
+                        if (res == null) {
                             System.out.println("Response is null");
-                        }else{
+                        } else {
                             System.out.println(res + "\n");
                         }
                         break;
@@ -102,11 +103,11 @@ public class MobilePhoneMenu {
                         break;
 
                     case 4:
-                        insertMobilePhone(mobilePhone,valid, response, input, brand_id, model, quantity, price, storage, chipset);
+                        insertMobilePhone(mobilePhone, valid, response, input, brand_id, model, quantity, price, storage, chipset);
                         break;
 
                     case 5:
-                        filterMobilePhone(mobilePhone,valid,response,price);
+                        filterMobilePhone(mobilePhone, valid, response, price);
 
                         break;
                     case 6:
@@ -123,13 +124,13 @@ public class MobilePhoneMenu {
                         System.out.println("Invalid choice. Please try again.");
                 }
             }
-        } catch (IOException ioException){
+        } catch (IOException ioException) {
             System.out.println("Connection issues" + ioException.getMessage());
         }
     }
 
     private void insertMobilePhone(MobilePhone mobilePhone, boolean valid, String response, String input, int brand_id, String model, int quantity, double price, String storage, String chipset) {
-        try{
+        try {
             System.out.println("Enter: ");
             valid = false;
             while (!valid) {
@@ -197,26 +198,25 @@ public class MobilePhoneMenu {
             System.out.println(response);
             if (response == null) {
                 System.out.println("Response is null");
-            }else if (response.equals("Brand not found")) {
+            } else if (response.equals("Brand not found")) {
                 System.out.println("Brand not found");
             } else {
                 mobilePhone = new MobilePhone(new JSONObject(response));
                 System.out.println(mobilePhone);
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Connection issues" + e.getMessage());
         }
 
 
-
     }
 
-    private  void  getAllOption(String response){
+    private void getAllOption(String response) {
         try {
             String getAllString = "getAllPhone";
             out.println(getAllString);
             response = in.readLine();
-            if(response == null) {
+            if (response == null) {
                 System.out.println("response is null");
             } else {
                 JSONArray jsonArray = new JSONArray(response);
@@ -235,7 +235,7 @@ public class MobilePhoneMenu {
         }
     }
 
-    private void filterMobilePhone(MobilePhone mobilePhone, boolean valid, String response , double price) {
+    private void filterMobilePhone(MobilePhone mobilePhone, boolean valid, String response, double price) {
         try {
             System.out.println("Please enter the threshold price: ");
             try {
@@ -246,9 +246,9 @@ public class MobilePhoneMenu {
                 String findByFilter = "getPhoneByFilter." + price;
                 out.println(findByFilter);
                 String filterResult = in.readLine();
-                if(filterResult == null) {
+                if (filterResult == null) {
                     System.out.println("Response is null");
-                }else {
+                } else {
                     JSONArray getByFilterJson = new JSONArray(filterResult);
 
                     for (int i = 0; i < getByFilterJson.length(); i++) {
@@ -263,10 +263,11 @@ public class MobilePhoneMenu {
                 System.out.println("Invalid input. Please enter a number.");
             }
 
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Connection issues" + e.getMessage());
         }
     }
+
     private void imageSubmenu(boolean valid, String input) {
         try {
             System.out.println("1. Display available images");
@@ -284,7 +285,7 @@ public class MobilePhoneMenu {
                         String fileNames = in.readLine();
                         if (fileNames == null) {
                             System.out.println("Response is null");
-                        }else {
+                        } else {
                             for (String fileName : fileNames.split(",")) {
                                 System.out.println(fileName);
                             }
@@ -294,53 +295,65 @@ public class MobilePhoneMenu {
                     case 2:
                         System.out.println("Input image name: ");
                         input = scanner.nextLine();
+
                         valid = InputValidation.validateString(input);
-                        if (valid) // Send the command "getImage.[imageName]" on your command channel
+                        if (valid)
                             out.println("getPhoneImage." + input);
                         String imageName = "images/" + input;
                         System.out.println(imageName);
-                        if(in.readLine() == null){
-                            System.out.println("Response is null");
-                        } else if (in.readLine().equals("Image not found")) {
+                        String imgResponse = in.readLine();
+                        if (imgResponse == null || "Image not found".equals(imgResponse)) {
                             System.out.println("Image not found");
-                        } else {
-                            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-                            long fileSize = dataInputStream.readLong();
-                            System.out.println("File size: " + fileSize + " bytes");
-
-                            byte[] fileData = new byte[(int) fileSize];
-                            dataInputStream.readFully(fileData);
-
-                            try (FileOutputStream fileOutputStream = new FileOutputStream(imageName)) {
-                                fileOutputStream.write(fileData);
-                            } catch (IOException e) {
-                                System.out.println("Error writing file" + e.getMessage());
-                            }
-                            System.out.println("File is Received");
+                        } else if (!"READY".equals(imgResponse)) {
+                            throw new IOException("Unexpected response: " + imgResponse);
                         }
+
+
+                        DataInputStream dataInputStream = new DataInputStream(dataSocket.getInputStream());
+                        long fileSize = dataInputStream.readLong();
+                        if (fileSize < 0 || fileSize > Integer.MAX_VALUE) {
+                            throw new IOException("Invalid file size: " + fileSize);
+                        }
+                        byte[] fileData = new byte[(int) fileSize];
+                        dataInputStream.readFully(fileData);
+
+                        try (FileOutputStream fileOutputStream = new FileOutputStream(imageName)) {
+                            fileOutputStream.write(fileData);
+                        } catch (IOException e) {
+                            System.out.println("Error writing file" + e.getMessage());
+                        }
+                        System.out.println("File is Received");
+
                         break;
                     case 3:
                         out.println("getAllPhoneImages");
-                        if(in.readLine() == null){
+                        String getAllImages = in.readLine();
+                        System.out.println(getAllImages);
+                        if (getAllImages == null) {
                             System.out.println("Response is null");
-                        } else {
-                            DataInputStream dis = new DataInputStream(socket.getInputStream());
-                            long zipLength = dis.readLong();
-                            System.out.println("ZIP file size: " + zipLength + " bytes");
-
-                            byte[] zipBytes = new byte[(int) zipLength];
-                            dis.readFully(zipBytes);
-
-                            File zipFile = new File("downloadedImages.zip");
-                            try (FileOutputStream fos = new FileOutputStream(zipFile)) {
-                                fos.write(zipBytes);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                            System.out.println("ZIP file received: " + zipFile.getAbsolutePath());
-                            unzipFile(zipFile, new File("images"));
+                        } else if (!getAllImages.equals("READY")) {
+                            System.out.println("Unexpecte responce: " + getAllImages + "\nPlease try again later or contact admin to fix the problem\n");
                         }
+                            try (
+                                 DataInputStream dis = new DataInputStream(dataSocket.getInputStream())) {
 
+                                long zipLength = dis.readLong();
+                                System.out.println("ZIP file size: " + zipLength + " bytes");
+
+                                if (zipLength < 0 || zipLength > Integer.MAX_VALUE)
+                                    throw new IOException("Invalid ZIP size: " + zipLength);
+
+                                byte[] zipBytes = new byte[(int) zipLength];
+                                dis.readFully(zipBytes);
+
+                                File zipFile = new File("downloadedImages.zip");
+                                try (FileOutputStream fos = new FileOutputStream(zipFile)) {
+                                    fos.write(zipBytes);
+                                }
+                                unzipFile(zipFile, new File("images"));
+                            }
+
+                        System.out.println("All images received");
                         break;
                     default:
                         System.out.println("Invalid input. Please enter 1,2 or 3.");

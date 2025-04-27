@@ -20,6 +20,7 @@ public class Main {
 
     public void start(int port) {
         try (Socket socket = new Socket("localhost", port);
+             Socket dataSocket = new Socket("localhost", 8081);
              OutputStream outputStream = socket.getOutputStream();
         ) {
             PrintWriter out = new PrintWriter(outputStream, true);
@@ -28,7 +29,7 @@ public class Main {
 
             boolean exit = false;
 
-            MobilePhoneMenu mobilePhoneMenu = new MobilePhoneMenu(scanner, socket, out, in);
+            MobilePhoneMenu mobilePhoneMenu = new MobilePhoneMenu(scanner, socket,dataSocket, out, in);
             BrandMenu brandMenu = new BrandMenu(scanner, socket, out, in);
 
             while (!exit) {
