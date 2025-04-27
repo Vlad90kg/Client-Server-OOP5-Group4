@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.Comparator;
@@ -22,9 +23,11 @@ import java.util.zip.ZipOutputStream;
 
 public class ClientHandler implements Runnable {
     private final Socket clientSocket;
+    private  final ServerSocket dataSocket;
 
-    public ClientHandler(Socket clientSocket) {
+    public ClientHandler(Socket clientSocket, ServerSocket dataSocket) {
         this.clientSocket = clientSocket;
+        this.dataSocket = dataSocket;
     }
 
 
@@ -136,9 +139,11 @@ public class ClientHandler implements Runnable {
                     case "getPhoneImage":
                         File file = new File("images/" + imageName);
                         if(file.exists()){
-                            try (FileInputStream fis = new FileInputStream(file);
+                            out.println("READY");
+                            try (Socket dataClient = dataSocket.accept();
+                                    FileInputStream fis = new FileInputStream(file);
                                  BufferedInputStream bis = new BufferedInputStream(fis)) {
-                                DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
+                                DataOutputStream dos = new DataOutputStream(dataClient.getOutputStream());
                                 long fileSize = file.length();
                                 System.out.println(fileSize);
                                 dos.writeLong(fileSize);
@@ -156,7 +161,7 @@ public class ClientHandler implements Runnable {
                         break;
 
                     case "getAllPhoneImages":
-                        sendFiles();
+                        sendFiles(out);
                         break;
 
                     case "exitPhone":
@@ -269,13 +274,14 @@ public class ClientHandler implements Runnable {
         return phone;
     }
 
-    private void sendFiles() throws IOException {
+    private void sendFiles(PrintWriter out) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
             File[] files = new File("images/").listFiles();
             if (files != null) {
                 for (File file : files) {
                     if (file.isFile()) {
+
                         System.out.println("Adding file: " + file.getName());
                         try (FileInputStream fis = new FileInputStream(file)) {
                             zos.putNextEntry(new ZipEntry(file.getName()));
@@ -291,14 +297,20 @@ public class ClientHandler implements Runnable {
             }
             zos.finish();
         }
+        out.println("READY");
+
         byte[] zipBytes = baos.toByteArray();
-        DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
+        try (Socket dataClient = dataSocket.accept();
+             DataOutputStream dos = new DataOutputStream(dataClient.getOutputStream())){
+            dos.writeLong(zipBytes.length);
 
-        dos.writeLong(zipBytes.length);
+            dos.write(zipBytes);
+            dos.flush();
+            System.out.println("getAllImages: ZIP sent, size: " + zipBytes.length);
+        }
 
-        dos.write(zipBytes);
-        dos.flush();
-        System.out.println("getAllImages: ZIP sent, size: " + zipBytes.length);
+
+
     }
 
 

@@ -12,13 +12,16 @@ public class ServerMain {
     static final int PORT_NUMBER = 8080;
     public static void main(String[] args) throws IOException {
         ServerMain server = new ServerMain();
-        try (ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
-             ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10)) {
+        try (ServerSocket commandSocket = new ServerSocket(PORT_NUMBER);
+             ServerSocket dataSocket = new ServerSocket(PORT_NUMBER + 1);
+
+             ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);) {
             while (true) {
-                Socket clientSocket = serverSocket.accept();
+
+                Socket clientSocket = commandSocket.accept();
                 System.out.println("New client connected: " + clientSocket.getRemoteSocketAddress());
 
-                fixedThreadPool.submit(new ClientHandler(clientSocket));
+                fixedThreadPool.submit(new ClientHandler(clientSocket, dataSocket));
             }
         }
     }
