@@ -62,20 +62,21 @@ public class IPController {
 
     @FXML
     protected void handleBrandFieldUpdate() throws Exception {
+        brandName.setText("N/A");
+
         if(brandField.getText().isEmpty()) {
-            brandName.setText("N/A");
             return;
         }
 
         try {
             Integer.parseInt(brandField.getText());
-
             ConnectionManager.getInstance().getOut().println("getBrandById." + brandField.getText());
             String res = ConnectionManager.getInstance().getIn().readLine();
             JSONObject jsonObj = new JSONObject(res);
             Brand foundBrand = new Brand(jsonObj);
             brandName.setText((foundBrand == null) ? "N/A" : foundBrand.getName());
-        } catch (NumberFormatException e) { brandName.setText("N/A"); }
+        }
+        catch (NumberFormatException e) { brandName.setText("N/A"); }
     }
 
     @FXML
