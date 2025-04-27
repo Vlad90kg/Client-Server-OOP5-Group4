@@ -21,6 +21,7 @@ public class Brand {
     }
 
     public Brand(JSONObject json) {
+        this.id = json.getInt("id");
         this.name = json.getString("name");
         this.description = json.getString("description");
     }
