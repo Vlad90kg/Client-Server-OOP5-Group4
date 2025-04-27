@@ -72,6 +72,7 @@ public class JsonConverter {
         JSONArray jsonArray = new JSONArray();
         for (Brand brand : brandsList) {
             JSONObject jsonObject = serializeBrand(brand);
+            System.out.println(jsonObject);
             jsonArray.put(jsonObject);
         }
         return jsonArray.toString();

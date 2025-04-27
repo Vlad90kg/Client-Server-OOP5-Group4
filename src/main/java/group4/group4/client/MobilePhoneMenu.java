@@ -20,13 +20,11 @@ public class MobilePhoneMenu {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
-    private Socket dataSocket;
-    public MobilePhoneMenu(Scanner scanner, Socket socket,Socket dataSocket, PrintWriter out, BufferedReader in) {
+    public MobilePhoneMenu(Scanner scanner, Socket socket,PrintWriter out, BufferedReader in) {
         this.scanner = scanner;
         this.socket = socket;
         this.out = out;
         this.in = in;
-        this.dataSocket=dataSocket;
     }
 
     public void display() {
@@ -308,7 +306,7 @@ public class MobilePhoneMenu {
                             throw new IOException("Unexpected response: " + imgResponse);
                         }
 
-
+                        Socket dataSocket = new Socket(socket.getInetAddress(), 8081);
                         DataInputStream dataInputStream = new DataInputStream(dataSocket.getInputStream());
                         long fileSize = dataInputStream.readLong();
                         if (fileSize < 0 || fileSize > Integer.MAX_VALUE) {
@@ -334,8 +332,8 @@ public class MobilePhoneMenu {
                         } else if (!getAllImages.equals("READY")) {
                             System.out.println("Unexpecte responce: " + getAllImages + "\nPlease try again later or contact admin to fix the problem\n");
                         }
-                            try (
-                                 DataInputStream dis = new DataInputStream(dataSocket.getInputStream())) {
+                            try (Socket dataSock = new Socket(socket.getInetAddress(), 8081);
+                                 DataInputStream dis = new DataInputStream(dataSock.getInputStream())) {
 
                                 long zipLength = dis.readLong();
                                 System.out.println("ZIP file size: " + zipLength + " bytes");
