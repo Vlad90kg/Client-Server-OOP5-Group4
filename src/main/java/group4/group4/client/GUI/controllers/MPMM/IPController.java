@@ -1,6 +1,7 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
-import group4.group4.server.dao.DaoBrandImpl;
+import group4.group4.client.GUI.ConnectionManager;
+import group4.group4.server.JsonConverter;
 import group4.group4.server.dto.Brand;
 import group4.group4.server.dto.MobilePhone;
 import group4.group4.server.dto.Specifications;
@@ -10,14 +11,13 @@ import javafx.scene.Scene;
 
 import java.io.IOException;
 
-import group4.group4.server.dao.DaoMobilePhoneImpl;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class IPController {
-    @FXML private final DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl();
-    @FXML private final DaoBrandImpl dbi = new DaoBrandImpl();
     @FXML private TextField brandField, modelField, quantityField, priceField, storageField, chipsetField;
     @FXML private Label brandName, message;
 
@@ -36,13 +36,23 @@ public class IPController {
                 return;
             }
 
-            dmpi.insert(new MobilePhone(
+            MobilePhone newPhone = new MobilePhone(
                     new Specifications(storageField.getText(), chipsetField.getText()),
                     Integer.parseInt(brandField.getText()),
                     modelField.getText(),
                     Integer.parseInt(quantityField.getText()),
                     Double.parseDouble(priceField.getText())
-            ));
+            );
+
+            JsonConverter jsonConverter = new JsonConverter();
+            JSONObject phoneJson = jsonConverter.serializeMobilePhone(newPhone);
+            JSONObject specJson = jsonConverter.serializeSpecifications(newPhone);
+            JSONArray phoneSpecArray = new JSONArray();
+            phoneSpecArray.put(phoneJson);
+            phoneSpecArray.put(specJson);
+            String jsonString = phoneSpecArray.toString();
+            ConnectionManager.getInstance().getOut().println("insertPhone." + jsonString);
+            ConnectionManager.getInstance().getIn().readLine();
 
             message.setText("Successfully added new mobile phone");
         }
@@ -57,8 +67,15 @@ public class IPController {
             return;
         }
 
-        Brand foundBrand = dbi.getById(Integer.parseInt(brandField.getText()));
-        brandName.setText((foundBrand == null) ? "N/A" : foundBrand.getName());
+        try {
+            Integer.parseInt(brandField.getText());
+
+            ConnectionManager.getInstance().getOut().println("getBrandById." + brandField.getText());
+            String res = ConnectionManager.getInstance().getIn().readLine();
+            JSONObject jsonObj = new JSONObject(res);
+            Brand foundBrand = new Brand(jsonObj);
+            brandName.setText((foundBrand == null) ? "N/A" : foundBrand.getName());
+        } catch (NumberFormatException e) { brandName.setText("N/A"); }
     }
 
     @FXML

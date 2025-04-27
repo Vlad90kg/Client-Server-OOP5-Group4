@@ -1,13 +1,16 @@
 package group4.group4.client.GUI.controllers.PBMM;
 
+import group4.group4.client.GUI.ConnectionManager;
 import group4.group4.server.dao.DaoBrandImpl;
 import group4.group4.server.dto.Brand;
+import group4.group4.server.dto.MobilePhone;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -19,23 +22,25 @@ public class SBController {
     @FXML
     protected void find() {
         try {
-            if (idField.getText().isEmpty()) {
+            String strId = idField.getText();
+
+            if (strId.isEmpty()) {
                 message.setText("Please specify ID");
                 return;
             }
 
-            Brand foundBrand = dbi.getById(Integer.parseInt(idField.getText()));
-
-            if (foundBrand == null) {
-                message.setText("Could not find any brand with specified ID");
-                return;
-            }
+            int intId = Integer.parseInt(strId);
+            ConnectionManager.getInstance().getOut().println("getBrandById." + intId);
+            String response = ConnectionManager.getInstance().getIn().readLine();
+            JSONObject jsonObject = new JSONObject(response);
+            Brand foundBrand = new Brand(jsonObject);
 
             message.setText("");
             name.setText("Brand: " + foundBrand.getName());
             description.setText("Description: " + foundBrand.getDescription());
         }
         catch (NumberFormatException e) { message.setText("ID must be a number"); }
+        catch (RuntimeException e) { message.setText("Could not find any brand with specified ID"); }
         catch (Exception e) { message.setText("Unexpected error occurred"); }
     }
 

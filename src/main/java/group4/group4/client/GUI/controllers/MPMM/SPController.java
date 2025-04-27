@@ -1,6 +1,7 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
-import group4.group4.server.dao.DaoBrandImpl;
+import group4.group4.client.GUI.ConnectionManager;
+import group4.group4.server.dto.Brand;
 import group4.group4.server.dto.MobilePhone;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,40 +10,44 @@ import javafx.scene.control.Label;
 
 import java.io.IOException;
 
-import group4.group4.server.dao.DaoMobilePhoneImpl;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 
 public class SPController {
-    @FXML private final DaoMobilePhoneImpl dmpi = new DaoMobilePhoneImpl();
-    @FXML private final DaoBrandImpl dbi = new DaoBrandImpl();
-    @FXML private Label brand, model, quantity, price, storage, chipset, message;
+    @FXML private Label brand, model, quantity, price, message;
     @FXML private TextField idField;
 
     @FXML
     protected void find() {
         try {
-            if (idField.getText().isEmpty()) {
+            String strId = idField.getText();
+
+            if (strId.isEmpty()) {
                 message.setText("Please specify ID");
                 return;
             }
 
-            MobilePhone foundPhone = dmpi.getById(Integer.parseInt(idField.getText()));
+            int intId = Integer.parseInt(strId);
 
-            if (foundPhone == null) {
-                message.setText("Could not find any mobile phone with specified ID");
-                return;
-            }
+            ConnectionManager.getInstance().getOut().println("getByPhoneId." + intId);
+            String response = ConnectionManager.getInstance().getIn().readLine();
+            JSONObject jsonObject = new JSONObject(response);
+            MobilePhone foundPhone = new MobilePhone(jsonObject);
+
+            ConnectionManager.getInstance().getOut().println("getBrandById." + foundPhone.getBrandId());
+            String res = ConnectionManager.getInstance().getIn().readLine();
+            JSONObject jsonObj = new JSONObject(res);
+            Brand foundBrand = new Brand(jsonObj);
 
             message.setText("");
-            brand.setText("Brand: " + dbi.getById(foundPhone.getBrandId()).getName());
+            brand.setText("Brand: " + foundBrand.getName());
             model.setText("Model: " + foundPhone.getModel());
             quantity.setText("Quantity: " + foundPhone.getQuantity());
             price.setText("Price: $" + foundPhone.getPrice());
-            storage.setText("Storage: " + foundPhone.getSpecifications().getStorage());
-            chipset.setText("Chipset: " + foundPhone.getSpecifications().getChipset());
         }
         catch (NumberFormatException e) { message.setText("ID must be a number"); }
+        catch (RuntimeException e) { message.setText("Could not find any mobile phone with specified ID"); }
         catch (Exception e) { message.setText("Unexpected error occurred"); }
     }
 

@@ -1,5 +1,6 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
+import group4.group4.client.GUI.ConnectionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,6 +10,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class DIController {
@@ -16,41 +18,56 @@ public class DIController {
     @FXML private Label message;
 
     @FXML
-    protected void downloadFromServer() {
-        File file = new File("images/" + fileName.getText().trim());
+    protected void downloadFromServer() throws IOException {
+        String imageName = fileName.getText();
 
-        if (fileName.getText().trim().isEmpty()) {
+        if (imageName.trim().isEmpty()) {
             message.setText("Please specify file");
             return;
         }
-        else if (!file.exists() || !file.isFile()) {
-            message.setText("Could not find specified image");
-            return;
-        }
 
-        try (FileInputStream fis = new FileInputStream(file);
-             BufferedInputStream bis = new BufferedInputStream(fis)) {
-            byte[] buffer = new byte[4096];
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            int bytesRead;
+        ConnectionManager.getInstance().getOut().println("getPhoneImage." + imageName);
 
-            while ((bytesRead = bis.read(buffer)) != -1) baos.write(buffer, 0, bytesRead);
+        if (ConnectionManager.getInstance().getIn().readLine().equals("Image not found")) message.setText("Could not find specified image");
+        else {
+            DataInputStream dataInputStream = new DataInputStream(ConnectionManager.getInstance().getSocket().getInputStream());
+            long fileSize = dataInputStream.readLong();
 
-            byte[] receivedData = baos.toByteArray();
-            String destPath = "downloads/" + fileName.getText().trim();
-            File destFile = new File(destPath);
+            byte[] fileData = new byte[(int) fileSize];
+            dataInputStream.readFully(fileData);
 
-            destFile.getParentFile().mkdirs();
-            try (FileOutputStream fos = new FileOutputStream(destFile)) {
-                fos.write(receivedData);
+            try (FileOutputStream fileOutputStream = new FileOutputStream(imageName)) {
+                fileOutputStream.write(fileData);
                 message.setText("Successfully downloaded specified image");
             }
+            catch (IOException e) { System.out.println("Error writing file" + e.getMessage()); }
         }
-        catch (IOException e) { System.out.println("Error during file transfer: " + e.getMessage()); }
     }
 
     @FXML
-    protected void downloadAll() {
+    protected void downloadAll() throws IOException {
+        ConnectionManager.getInstance().getOut().println("getAllPhoneImages");
+        if (ConnectionManager.getInstance().getIn().readLine() == null) {
+            message.setText("There is currently no any images in the server");
+        }
+        else {
+            DataInputStream dis = new DataInputStream(ConnectionManager.getInstance().getSocket().getInputStream());
+            long zipLength = dis.readLong();
+            System.out.println("ZIP file size: " + zipLength + " bytes");
+
+            byte[] zipBytes = new byte[(int) zipLength];
+            dis.readFully(zipBytes);
+
+            File zipFile = new File("downloadedImages.zip");
+            try (FileOutputStream fos = new FileOutputStream(zipFile)) {
+                fos.write(zipBytes);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("ZIP file received: " + zipFile.getAbsolutePath());
+            unzipFile(zipFile, new File("images"));
+        }
+
         String sourceDirPath = "images/";
         File sourceDir = new File(sourceDirPath);
         File[] files = sourceDir.listFiles();
@@ -81,6 +98,32 @@ public class DIController {
             }
         }
         catch (IOException e) { System.out.println("Error creating zip file: " + e.getMessage()); }
+    }
+
+    @FXML
+    private void unzipFile(File downloadZipFile, File extractTo) {
+        try (FileInputStream fileInputStream = new FileInputStream(downloadZipFile);
+             BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+             ZipInputStream zipInputStream = new ZipInputStream(bufferedInputStream)) {
+            ZipEntry zipEntry;
+
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                File outFile = new File(extractTo, zipEntry.getName());
+                System.out.println("Extracting file: " + outFile.getAbsolutePath());
+
+                try (FileOutputStream fos = new FileOutputStream(outFile);
+                     BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = zipInputStream.read(buffer)) != -1) bos.write(buffer, 0, bytesRead);
+                }
+                zipInputStream.closeEntry();
+            }
+
+            System.out.println("File extracted to: " + extractTo.getAbsolutePath());
+        }
+        catch (FileNotFoundException e) { System.out.println("File not found: " + e.getMessage()); }
+        catch (IOException e) { System.out.println("Cannot unzip due to connsection failure " + e.getMessage()); }
     }
 
     @FXML
