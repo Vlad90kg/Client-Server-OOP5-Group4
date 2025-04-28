@@ -10,13 +10,13 @@
             <font>
                 <Font name="Arial Bold" size="24.0" />
             </font></Label>
-        <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="320.0" style="-fx-background-color: transparent;" xmlns:fx="http://javafx.com/fxml">
-            <VBox alignment="CENTER" spacing="15.0">
+        <ScrollPane fitToWidth="true" prefHeight="350.0" prefWidth="640.0" style="-fx-background-color: transparent;" xmlns:fx="http://javafx.com/fxml">
+            <VBox fx:id="imagesContainer" alignment="CENTER">
                 <children>
-                    <Label fx:id="imagesList">
-                        <font>
-                            <Font name="Arial" size="16.0" />
-                        </font></Label>
+                    <Label fx:id="message" layoutX="20" layoutY="20">
+                  <font>
+                     <Font name="Arial" size="0.01" />
+                  </font></Label>
                 </children></VBox>
         </ScrollPane>
         <Button mnemonicParsing="false" onAction="#goBack" text="Go Back">
