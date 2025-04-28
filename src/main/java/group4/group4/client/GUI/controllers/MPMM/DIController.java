@@ -1,6 +1,7 @@
 package group4.group4.client.GUI.controllers.MPMM;
 
 import group4.group4.client.GUI.ConnectionManager;
+import group4.group4.util.InputValidation;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.net.Socket;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -18,42 +20,54 @@ public class DIController {
     @FXML private Label message;
 
     @FXML
-    protected void downloadFromServer() throws IOException {
-        String imageName = fileName.getText();
+    protected void downloadFromServer() {
+        String nameOfFile = fileName.getText();
 
-        if (imageName.trim().isEmpty()) {
+        if (nameOfFile.trim().isEmpty()) {
             message.setText("Please specify file");
             return;
         }
 
-        ConnectionManager.getInstance().getOut().println("getPhoneImage." + imageName);
+        try {
+            ConnectionManager.getInstance().getOut().println("getPhoneImage." + nameOfFile);
+            String imageName = "images/" + nameOfFile;
+            System.out.println(imageName);
+            String imgResponse = ConnectionManager.getInstance().getIn().readLine();
+            if (imgResponse.equals("Image not found")) message.setText("Specified image does not exist");
+            if (!"READY".equals(imgResponse)) { throw new IOException("Unexpected response: " + imgResponse); }
 
-        if (ConnectionManager.getInstance().getIn().readLine().equals("Image not found")) message.setText("Could not find specified image");
-        else {
-            DataInputStream dataInputStream = new DataInputStream(ConnectionManager.getInstance().getSocket().getInputStream());
+            Socket dataSocket = new Socket(ConnectionManager.getInstance().getSocket().getInetAddress(), 8081);
+            DataInputStream dataInputStream = new DataInputStream(dataSocket.getInputStream());
             long fileSize = dataInputStream.readLong();
-
+            if (fileSize < 0 || fileSize > Integer.MAX_VALUE) { throw new IOException("Invalid file size: " + fileSize); }
             byte[] fileData = new byte[(int) fileSize];
             dataInputStream.readFully(fileData);
 
-            try (FileOutputStream fileOutputStream = new FileOutputStream(imageName)) {
-                fileOutputStream.write(fileData);
-                message.setText("Successfully downloaded specified image");
-            }
+            try (FileOutputStream fileOutputStream = new FileOutputStream(imageName)) { fileOutputStream.write(fileData); }
             catch (IOException e) { System.out.println("Error writing file" + e.getMessage()); }
+            message.setText("Successfully downloaded specified image");
         }
+        catch (IOException e) { e.printStackTrace(); }
     }
 
     @FXML
     protected void downloadAll() throws IOException {
         ConnectionManager.getInstance().getOut().println("getAllPhoneImages");
-        if (ConnectionManager.getInstance().getIn().readLine() == null) {
-            message.setText("There is currently no any images in the server");
+        String getAllImages = ConnectionManager.getInstance().getIn().readLine();
+        System.out.println(getAllImages);
+        if (getAllImages == null) {
+            System.out.println("Response is null");
+        } else if (!getAllImages.equals("READY")) {
+            System.out.println("Unexpecte responce: " + getAllImages + "\nPlease try again later or contact admin to fix the problem\n");
         }
-        else {
-            DataInputStream dis = new DataInputStream(ConnectionManager.getInstance().getSocket().getInputStream());
+        try (Socket dataSock = new Socket(ConnectionManager.getInstance().getSocket().getInetAddress(), 8081);
+             DataInputStream dis = new DataInputStream(dataSock.getInputStream())) {
+
             long zipLength = dis.readLong();
             System.out.println("ZIP file size: " + zipLength + " bytes");
+
+            if (zipLength < 0 || zipLength > Integer.MAX_VALUE)
+                throw new IOException("Invalid ZIP size: " + zipLength);
 
             byte[] zipBytes = new byte[(int) zipLength];
             dis.readFully(zipBytes);
@@ -61,43 +75,11 @@ public class DIController {
             File zipFile = new File("downloadedImages.zip");
             try (FileOutputStream fos = new FileOutputStream(zipFile)) {
                 fos.write(zipBytes);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
-            System.out.println("ZIP file received: " + zipFile.getAbsolutePath());
             unzipFile(zipFile, new File("images"));
         }
 
-        String sourceDirPath = "images/";
-        File sourceDir = new File(sourceDirPath);
-        File[] files = sourceDir.listFiles();
-        String zipFileName = "downloads/images.zip";
-        File zipFile = new File(zipFileName);
-
-        if (sourceDir.list() != null && sourceDir.list().length == 0) message.setText("There is currently no any images in the server");
-
-        File downloadsDir = new File("downloads");
-        if (!downloadsDir.exists()) downloadsDir.mkdirs();
-
-        try (FileOutputStream fos = new FileOutputStream(zipFile);
-             ZipOutputStream zos = new ZipOutputStream(fos)) {
-            for (File file : files) {
-                try (FileInputStream fis = new FileInputStream(file);
-                     BufferedInputStream bis = new BufferedInputStream(fis)) {
-                    ZipEntry entry = new ZipEntry(file.getName());
-                    zos.putNextEntry(entry);
-
-                    byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    while ((bytesRead = bis.read(buffer)) != -1) zos.write(buffer, 0, bytesRead);
-                    zos.closeEntry();
-
-                    message.setText("Successfully downloaded .zip archive consisting all images");
-                }
-                catch (IOException e) { System.out.println("Error processing file " + file.getName() + ": " + e.getMessage()); }
-            }
-        }
-        catch (IOException e) { System.out.println("Error creating zip file: " + e.getMessage()); }
+        message.setText("Successfully downloaded .zip archive consisting all images");
     }
 
     @FXML
